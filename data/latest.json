@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-08-17T10:13:51.826Z",
- "sweepCursor": 0,
+ "updatedAt": "2026-08-17T10:14:58.489Z",
+ "sweepCursor": 4,
  "budget": {
   "month": "2026-08",
-  "callsUsed": 4,
+  "callsUsed": 8,
   "cap": 235
  },
  "pinned": {
@@ -71,11 +71,11 @@
  },
  "bestInWindow": {
   "CWB": {
-   "priceAud2pax": 5644,
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14",
-   "tripDays": 36,
-   "ts": "2026-08-17T10:13:51.826Z"
+   "priceAud2pax": 5198,
+   "depDate": "2027-02-05",
+   "retDate": "2027-03-07",
+   "tripDays": 30,
+   "ts": "2026-08-17T10:14:58.489Z"
   },
   "GRU": {
    "priceAud2pax": 5099,
@@ -87,10 +87,10 @@
  },
  "allTimeLow": {
   "CWB": {
-   "priceAud2pax": 5644,
-   "ts": "2026-08-17T10:13:51.826Z",
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14"
+   "priceAud2pax": 5198,
+   "ts": "2026-08-17T10:14:58.489Z",
+   "depDate": "2027-02-05",
+   "retDate": "2027-03-07"
   },
   "GRU": {
    "priceAud2pax": 5099,
