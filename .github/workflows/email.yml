@@ -1,0 +1,30 @@
+name: email
+# Send the digest on demand, from whatever is already in data/latest.json.
+# No search runs, so a manual send costs nothing against the SerpAPI budget.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build email digest
+        id: digest
+        run: node scripts/email.mjs --out "$RUNNER_TEMP/digest.html"
+      - name: Send email digest
+        uses: dawidd6/action-send-mail@v18
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_APP_PASSWORD }}
+          from: Southbound Tracker <${{ secrets.MAIL_USERNAME }}>
+          to: ${{ secrets.MAIL_TO }}
+          subject: ${{ steps.digest.outputs.subject }}
+          html_body: file://${{ runner.temp }}/digest.html
