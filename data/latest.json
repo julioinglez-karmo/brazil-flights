@@ -1,9 +1,9 @@
 {
- "updatedAt": null,
+ "updatedAt": "2026-08-17T10:07:23.288Z",
  "sweepCursor": 0,
  "budget": {
-  "month": null,
-  "callsUsed": 0,
+  "month": "2026-08",
+  "callsUsed": 2,
   "cap": 235
  },
  "pinned": {},
