@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#e9eef1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080f14" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Daily flight-price tracker for Brisbane to Curitiba and Sao Paulo, February to March 2027, two travellers.">
+<title>Southbound — BNE to Brazil, Feb 2027</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2029'/%3E%3Cpath d='M5 21c6-9 16-13 22-13' stroke='%23f0b95e' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='21' r='3' fill='%23f0b95e'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4" defer></script>
+<script type="module" src="assets/app.js"></script>
+</head>
+<body>
+
+<a class="skip" href="#hero">Skip to prices</a>
+
+<header class="masthead">
+  <div class="wrap masthead-in">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 24" aria-hidden="true" focusable="false">
+        <path d="M2 20C11 6 27 2 38 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="2" cy="20" r="3" fill="currentColor"/>
+        <circle cx="38" cy="3" r="3" fill="currentColor"/>
+      </svg>
+      <span class="brand-word">Southbound</span>
+    </div>
+    <p class="trip-line" id="trip-line">Brisbane → Curitiba &amp; São&nbsp;Paulo · 2&nbsp;travellers · Feb–Mar&nbsp;2027</p>
+    <p class="freshness" id="freshness" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span><span class="freshness-text">Loading price data…</span>
+    </p>
+  </div>
+</header>
+
+<div class="wrap" id="alert-slot">
+  <div class="banner" id="alert-banner" role="status" hidden></div>
+  <div class="banner banner--bad" id="load-error" role="alert" hidden></div>
+</div>
+
+<div class="wrap" id="empty-state" hidden>
+  <section class="card waiting">
+    <p class="eyebrow">No prices yet</p>
+    <h1 class="waiting-title">Waiting for the first fetch.</h1>
+    <p class="waiting-body">
+      The tracker searches Amadeus every hour through the Brisbane day and once more overnight for
+      flexible dates. The moment the first search lands, this page fills with prices, deltas and trends.
+    </p>
+    <div class="strip strip--lg" aria-label="Ideal route: Brisbane, Sydney, Santiago, Curitiba">
+      <span class="strip-node">BNE</span><i class="strip-leg"></i><span class="strip-node">SYD</span><i class="strip-leg"></i><span class="strip-node">SCL</span><i class="strip-leg"></i><span class="strip-node">CWB</span>
+    </div>
+    <p class="waiting-foot">Watching for a return under <strong id="waiting-target">A$4,500</strong> for two.</p>
+  </section>
+</div>
+
+<main class="wrap" id="dash" hidden>
+
+  <section id="hero" aria-labelledby="hero-h">
+    <h2 class="sr-only" id="hero-h">Pinned dates</h2>
+    <div class="hero-grid" id="hero-cards"></div>
+  </section>
+
+  <section id="ideal-route" aria-labelledby="ideal-h">
+    <h2 class="sr-only" id="ideal-h">Ideal LATAM route</h2>
+    <div id="ideal-card"></div>
+  </section>
+
+  <section id="trend" aria-labelledby="trend-h" class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">Daily cheapest</p>
+        <h2 class="card-title" id="trend-h">How the price is moving</h2>
+      </div>
+      <button class="ghost-btn" type="button" id="trend-toggle" aria-expanded="false" aria-controls="trend-table">Table</button>
+    </div>
+    <ul class="legend" id="trend-legend"></ul>
+    <div class="chart-box"><canvas id="trend-canvas" role="img" aria-label="Line chart of daily cheapest prices per destination"></canvas></div>
+    <p class="chart-empty" id="trend-empty" hidden>Not enough history yet — the trend line needs at least two days of searches.</p>
+    <div class="scroll-x" id="trend-table" hidden></div>
+  </section>
+
+  <section id="heatmap" aria-labelledby="heat-h" class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">Flexible dates</p>
+        <h2 class="card-title" id="heat-h">Departure day × trip length</h2>
+      </div>
+      <div class="segmented" id="heat-dests" role="group" aria-label="Destination shown in the calendar"></div>
+    </div>
+    <div class="scroll-x heat-scroll"><div class="heat-grid" id="heat-grid"></div></div>
+    <div class="heat-foot">
+      <ul class="scale" id="heat-scale" aria-hidden="true"></ul>
+      <p class="scale-note" id="heat-scale-note"></p>
+    </div>
+    <div class="detail" id="heat-detail" aria-live="polite"></div>
+  </section>
+
+  <section id="offers" aria-labelledby="offers-h" class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">Latest search</p>
+        <h2 class="card-title" id="offers-h">Cheapest on the board</h2>
+      </div>
+      <div class="segmented" id="offer-filters" role="group" aria-label="Filter offers"></div>
+    </div>
+    <div class="scroll-x">
+      <table class="offers-table" id="offers-table">
+        <thead>
+          <tr>
+            <th scope="col">Route</th><th scope="col" class="num">Price</th><th scope="col">Dates</th>
+            <th scope="col">Airline</th><th scope="col" class="num">Stops</th><th scope="col" class="num">Flight time</th><th scope="col"><span class="sr-only">Booking link</span></th>
+          </tr>
+        </thead>
+        <tbody id="offers-body"></tbody>
+      </table>
+    </div>
+    <p class="table-note" id="offers-note"></p>
+  </section>
+
+  <section id="meta" aria-labelledby="meta-h" class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">Tracker health</p>
+        <h2 class="card-title" id="meta-h">Behind the numbers</h2>
+      </div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-tile">
+        <p class="tile-label">Last search</p>
+        <p class="tile-value" id="meta-updated">—</p>
+        <p class="tile-note" id="meta-updated-note"></p>
+      </div>
+      <div class="meta-tile">
+        <p class="tile-label">Target price</p>
+        <p class="tile-value" id="meta-target">—</p>
+        <p class="tile-note" id="meta-target-note"></p>
+      </div>
+      <div class="meta-tile meta-tile--wide">
+        <p class="tile-label">API calls this month</p>
+        <p class="tile-value" id="meta-budget">—</p>
+        <div class="gauge" id="meta-gauge" role="img" aria-label="API call budget used">
+          <span class="gauge-fill" id="meta-gauge-fill"></span>
+        </div>
+        <p class="tile-note" id="meta-budget-note"></p>
+      </div>
+    </div>
+    <div class="meta-actions">
+      <a class="btn" id="meta-gflights" href="https://www.google.com/travel/flights" target="_blank" rel="noopener">Search Google Flights</a>
+      <button class="btn btn--ghost" type="button" id="csv-btn">Download history (CSV)</button>
+      <span class="csv-status" id="csv-status" role="status"></span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap site-foot">
+  <p>All prices are AUD grand totals for 2 adults, return. Times shown in Brisbane. Data from Amadeus, refreshed by GitHub Actions.</p>
+</footer>
+
+</body>
+</html>
