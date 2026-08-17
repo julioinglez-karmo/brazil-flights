@@ -48,14 +48,14 @@ test("sweep mode advances cursor and respects batch size", async () => {
     mode: "sweep", dataDir: join(dir, "data"), configPath: new URL("../config.json", import.meta.url).pathname,
     client: fakeClient(log), now: new Date("2026-08-17T13:30:00Z"),
   });
-  assert.equal(log.length, 30); // sweep.dailyCallBudget
-  assert.equal(latest.sweepCursor, 30);
+  assert.equal(log.length, 4); // sweep.dailyCallBudget
+  assert.equal(latest.sweepCursor, 4);
 });
 
 test("budget exhaustion stops before searching", async () => {
   const dir = setup();
   const seeded = JSON.parse(readFileSync(join(dir, "data/latest.json"), "utf8"));
-  seeded.budget = { month: "2026-08", callsUsed: 1950, cap: 1950 };
+  seeded.budget = { month: "2026-08", callsUsed: 240, cap: 240 };
   writeFileSync(join(dir, "data/latest.json"), JSON.stringify(seeded));
   const log = [];
   const { records } = await runFetch({
@@ -138,7 +138,7 @@ test("GITHUB_OUTPUT no repeat alert: true to true writes nothing", async () => {
 test("partial-trim sweep cursor: budget exhaustion mid-batch", async () => {
   const dir = setup();
   const seeded = JSON.parse(readFileSync(join(dir, "data/latest.json"), "utf8"));
-  seeded.budget = { month: "2026-08", callsUsed: 1940, cap: 1950 };
+  seeded.budget = { month: "2026-08", callsUsed: 238, cap: 240 };
   seeded.sweepCursor = 0;
   writeFileSync(join(dir, "data/latest.json"), JSON.stringify(seeded));
 
@@ -148,7 +148,7 @@ test("partial-trim sweep cursor: budget exhaustion mid-batch", async () => {
     client: fakeClient(log), now: new Date("2026-08-17T13:30:00Z"),
   });
 
-  assert.equal(log.length, 10, "should make exactly 10 searches (remaining budget)");
-  assert.equal(latest.sweepCursor, 10, "cursor should advance by 10");
-  assert.equal(latest.budget.callsUsed, 1950, "budget should reach cap");
+  assert.equal(log.length, 2, "should make exactly 2 searches (remaining budget)");
+  assert.equal(latest.sweepCursor, 2, "cursor should advance by 2");
+  assert.equal(latest.budget.callsUsed, 240, "budget should reach cap");
 });

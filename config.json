@@ -3,17 +3,16 @@
   "destinations": ["CWB", "GRU"],
   "pinned": { "depDate": "2027-02-06", "retDate": "2027-03-14" },
   "sweep": {
-    "depDates": { "month": "2027-02", "firstDay": 1, "lastDay": 27, "step": 2 },
-    "tripLengths": [30, 33, 37, 41, 45],
+    "depDates": { "month": "2027-02", "firstDay": 1, "lastDay": 25, "step": 4 },
+    "tripLengths": [30, 37, 45],
     "minTripDays": 30,
     "latestReturn": "2027-03-31",
-    "dailyCallBudget": 30
+    "dailyCallBudget": 4
   },
-  "monthlyCallBudget": 1950,
+  "monthlyCallBudget": 240,
   "targetPriceAud2pax": 4500,
   "latamCarriers": ["LA", "JJ", "XL", "LU", "LP", "PZ", "4C", "4M"],
   "idealRoutePath": ["BNE", "SYD", "SCL", "CWB"],
   "adults": 2,
-  "currency": "AUD",
-  "maxOffers": 20
+  "currency": "AUD"
 }

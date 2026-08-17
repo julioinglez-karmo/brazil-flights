@@ -1,10 +1,10 @@
 {
- "updatedAt": "2026-08-17T09:28:41.896Z",
+ "updatedAt": null,
  "sweepCursor": 0,
  "budget": {
-  "month": "2026-08",
-  "callsUsed": 2,
-  "cap": 1950
+  "month": null,
+  "callsUsed": 0,
+  "cap": 235
  },
  "pinned": {},
  "deltas": {},
