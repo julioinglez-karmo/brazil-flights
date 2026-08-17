@@ -44,3 +44,15 @@ test("deriveLatest: pinned, deltas, bestInWindow, allTimeLow, alert", () => {
   assert.equal(l.sweepCursor, 5);
   assert.equal(l.updatedAt, now.toISOString());
 });
+
+test("deriveLatest: stable sort preserves input order on tied timestamps", () => {
+  // Two ok records for pinned CWB pair with SAME ts but different prices
+  // Stable sort must preserve input order, so later-in-input becomes .at(-1)
+  const records = [
+    rec({ ts: "2026-08-17T05:00:00Z", cheapest: offer(4100) }), // first: higher price
+    rec({ ts: "2026-08-17T05:00:00Z", cheapest: offer(3900) }), // second: lower price, should be selected
+  ];
+  const budget = { month: "2026-08", callsUsed: 10, cap: 1950 };
+  const l = deriveLatest(records, { config, budget, sweepCursor: 5, now });
+  assert.equal(l.pinned.CWB.cheapest.priceAud2pax, 3900);
+});

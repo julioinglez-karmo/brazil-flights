@@ -3,7 +3,7 @@ export function pairKey(r) {
 }
 
 const day = (ts) => ts.slice(0, 10);
-const byTsAsc = (a, b) => (a.ts < b.ts ? -1 : 1);
+const byTsAsc = (a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : 0);
 
 export function deriveDaily(records, now) {
   const pairs = {};
