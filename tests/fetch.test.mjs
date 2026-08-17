@@ -1,15 +1,28 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync, readFileSync, cpSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runFetch } from "../scripts/fetch.mjs";
 
 const fixture = JSON.parse(readFileSync(new URL("./fixtures/serpapi-cwb.json", import.meta.url)));
 
+// Build a pristine data dir rather than copying live data/ — the workflows
+// commit real rows there, and tests must not drift with production state.
 function setup() {
   const dir = mkdtempSync(join(tmpdir(), "bf-"));
-  cpSync(new URL("../data", import.meta.url).pathname, join(dir, "data"), { recursive: true });
+  mkdirSync(join(dir, "data"));
+  writeFileSync(join(dir, "data/history.jsonl"), "");
+  writeFileSync(join(dir, "data/daily.json"), JSON.stringify({ generatedAt: null, pairs: {}, bestPerDay: {} }));
+  writeFileSync(join(dir, "data/latest.json"), JSON.stringify({
+    updatedAt: null,
+    sweepCursor: 0,
+    budget: { month: null, callsUsed: 0, cap: 235 },
+    pinned: {}, deltas: {},
+    idealRoute: { latest: null, latestTs: null, lastSeen: null },
+    bestInWindow: {}, allTimeLow: {},
+    alert: { active: false, priceAud2pax: null, targetAud2pax: 4500 },
+  }));
   return dir;
 }
 
