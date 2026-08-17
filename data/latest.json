@@ -1,20 +1,104 @@
 {
- "updatedAt": "2026-08-17T10:07:23.288Z",
+ "updatedAt": "2026-08-17T10:13:51.826Z",
  "sweepCursor": 0,
  "budget": {
   "month": "2026-08",
-  "callsUsed": 2,
+  "callsUsed": 4,
   "cap": 235
  },
- "pinned": {},
- "deltas": {},
+ "pinned": {
+  "CWB": {
+   "ts": "2026-08-17T10:13:51.826Z",
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14",
+   "cheapest": {
+    "priceAud2pax": 5644,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "MEL",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2005
+   },
+   "cheapestLatam": null
+  },
+  "GRU": {
+   "ts": "2026-08-17T10:13:51.826Z",
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14",
+   "cheapest": {
+    "priceAud2pax": 5099,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "MEL",
+     "SCL",
+     "GRU"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 1450
+   },
+   "cheapestLatam": null
+  }
+ },
+ "deltas": {
+  "CWB": {
+   "vsYesterdayAud": null,
+   "vs7dAud": null
+  },
+  "GRU": {
+   "vsYesterdayAud": null,
+   "vs7dAud": null
+  }
+ },
  "idealRoute": {
   "latest": null,
-  "latestTs": null,
+  "latestTs": "2026-08-17T10:13:51.826Z",
   "lastSeen": null
  },
- "bestInWindow": {},
- "allTimeLow": {},
+ "bestInWindow": {
+  "CWB": {
+   "priceAud2pax": 5644,
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14",
+   "tripDays": 36,
+   "ts": "2026-08-17T10:13:51.826Z"
+  },
+  "GRU": {
+   "priceAud2pax": 5099,
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14",
+   "tripDays": 36,
+   "ts": "2026-08-17T10:13:51.826Z"
+  }
+ },
+ "allTimeLow": {
+  "CWB": {
+   "priceAud2pax": 5644,
+   "ts": "2026-08-17T10:13:51.826Z",
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14"
+  },
+  "GRU": {
+   "priceAud2pax": 5099,
+   "ts": "2026-08-17T10:13:51.826Z",
+   "depDate": "2027-02-06",
+   "retDate": "2027-03-14"
+  }
+ },
  "alert": {
   "active": false,
   "priceAud2pax": null,
