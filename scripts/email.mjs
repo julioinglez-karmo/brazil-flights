@@ -315,14 +315,18 @@ function idealStrip(config, latest) {
         "No LATAM fare has come back on this exact path yet. The cheaper routings above still stand.");
   }
 
+  // Stacked as table rows with cell padding rather than divs with margins:
+  // Outlook's Word engine honours td padding and quietly drops div margins.
   return `<tr><td style="padding:0 0 12px 0;">
   <table ${TABLE} width="100%" style="width:100%;">
     <tr><td bgcolor="${C.panel}" style="background-color:${C.panel};border-radius:12px;padding:22px 20px;">
-      ${eyebrow("The route you want", C.gold)}
-      <div style="margin-top:14px;">${routeStrip(path)}</div>
-      ${p(`margin-top:14px;font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
-          esc(`${CITY[path[0]] ?? path[0]} → ${CITY[dest] ?? dest} on LATAM metal, via ${via}.`))}
-      <div style="margin-top:16px;">${figure}</div>
+      <table ${TABLE} width="100%" style="width:100%;">
+        <tr><td>${eyebrow("The route you want", C.gold)}</td></tr>
+        <tr><td style="padding-top:14px;">${routeStrip(path)}</td></tr>
+        <tr><td style="padding-top:14px;">${p(`font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
+            esc(`${CITY[path[0]] ?? path[0]} → ${CITY[dest] ?? dest} on LATAM metal, via ${via}.`))}</td></tr>
+        <tr><td style="padding-top:16px;">${figure}</td></tr>
+      </table>
     </td></tr>
   </table>
 </td></tr>`;
