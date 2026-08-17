@@ -1,0 +1,46 @@
+name: sweep
+on:
+  schedule:
+    - cron: "30 13 * * *" # 23:30 Brisbane (UTC+10)
+  workflow_dispatch:
+concurrency:
+  group: fetch
+  cancel-in-progress: false
+permissions:
+  contents: write
+  issues: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: fetch
+        run: node scripts/fetch.mjs --mode sweep
+        env:
+          AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
+          AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
+          AMADEUS_ENV: ${{ vars.AMADEUS_ENV || 'test' }}
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "data: sweep $(date -u +%FT%TZ)"
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase && sleep 3
+          done
+          exit 1
+      - name: Price alert issue
+        if: steps.fetch.outputs.alert == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "✈️ Price alert: A\$${{ steps.fetch.outputs.alert_price }} for 2 pax (target hit)" \
+            --body "The pinned BNE→Brazil round trip dropped to **A\$${{ steps.fetch.outputs.alert_price }}** for 2 passengers. Check the dashboard." \
+            --repo "$GITHUB_REPOSITORY"
