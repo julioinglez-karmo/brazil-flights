@@ -167,3 +167,56 @@ GitHub emails to the user for free; the dashboard shows a matching banner.
    (developers.amadeus.com, no credit card) and provide API Key + Secret.
 2. **Claude:** create public GitHub repo, add secrets, enable Pages, push
    code, run the first fetch, verify the dashboard.
+
+## Amendment 2026-08-17: Amadeus decommissioned → SerpAPI
+
+The Amadeus Self-Service API is dead, so the price source moves to
+**SerpAPI's `google_flights` engine**. The original design above stands
+except where noted here.
+
+**Data source.** `scripts/lib/serpapi.mjs` replaces `scripts/lib/amadeus.mjs`.
+A single `GET https://serpapi.com/search.json` per search
+(`engine=google_flights`, `type=1` round trip, `gl=au`, `hl=en`) authenticated
+by one `SERPAPI_API_KEY` secret — no OAuth token step. Retry policy is
+unchanged (3 attempts, 2s/8s backoff on 429/5xx), plus two new cases: other
+4xx throw immediately, and SerpAPI's habit of returning HTTP 200 with a
+body-level `{"error": ...}` is treated as a failure. Because the key travels
+in the query string, every error message is passed through a redactor so it
+can never reach the Actions log.
+
+**Extraction.** `extractSerpSearch` replaces `extractSearch` behind the same
+`{cheapest, cheapestLatam, idealRoute}` contract, so `aggregate.mjs`, the
+history schema and the dashboard are unchanged. Two honest losses of fidelity:
+
+- Google publishes no *validating carrier*, so "is this a LATAM itinerary?" is
+  approximated per segment — every segment must carry a LATAM flight-number
+  prefix or an airline name containing "LATAM". `validating` reports the first
+  segment's marketing prefix.
+- `backRoute` is always empty. The round-trip return leg is only retrievable
+  via a second `departure_token` request, which would double the call cost for
+  data the dashboard does not display.
+
+**Cadence and budget.** The free tier allows 250 searches/month against
+Amadeus' ~1950, a ~9x cut, so the schedule shrinks accordingly:
+
+| | Before | After |
+|---|---|---|
+| Pinned | hourly, 06:00–22:00 Brisbane | twice daily, 08:00 & 20:00 Brisbane |
+| Sweep grid | 108 units (Feb 1–27 step 2 × 5 lengths) | 34 units (Feb 1–25 step 4 × 3 lengths) |
+| Sweep batch | 30/day | 4/day |
+| Monthly cap | 1950 | 240 |
+
+At 4 pinned + 4 sweep calls a day this fits a 30-day month exactly; in a
+31-day month the existing budget guard trims the tail, which is the designed
+degradation. The full sweep grid now recycles every ~8.5 days instead of
+~3.6. The dashboard's freshness threshold moves from 3h to 14h to match the
+twice-daily cadence, keeping the Brisbane-daytime escalation rule.
+
+**Testing.** `tests/fixtures/serpapi-cwb.json` replaces the Amadeus fixture,
+modelling the same three-way discrimination (cheapest overall ≠ cheapest LATAM
+≠ ideal route). Still no live API calls. `parseDurationMin` is gone — SerpAPI
+reports durations as integer minutes, so the ISO-8601 parser had no caller.
+
+**Setup change.** Step 1 of the original setup is now: create a free SerpAPI
+account (serpapi.com, no credit card) and provide the private API key as the
+`SERPAPI_API_KEY` repository secret.

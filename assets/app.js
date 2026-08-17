@@ -42,7 +42,7 @@ const LATAM = new Set(["LA", "JJ", "XL", "LU", "LP", "PZ", "4C", "4M"]);
 const IDEAL_PATH = ["BNE", "SYD", "SCL", "CWB"];
 const CITY = { CWB: "Curitiba", GRU: "São Paulo", BNE: "Brisbane", SYD: "Sydney", SCL: "Santiago" };
 const AIRLINE = { LA: "LATAM", JJ: "LATAM Brasil", QF: "Qantas", VA: "Virgin Australia", NZ: "Air New Zealand", UA: "United", AA: "American", DL: "Delta", EK: "Emirates", QR: "Qatar Airways", SQ: "Singapore Airlines", AC: "Air Canada", AR: "Aerolíneas Argentinas", G3: "GOL", AD: "Azul", CM: "Copa", AM: "Aeroméxico", ET: "Ethiopian", SA: "South African", TP: "TAP", IB: "Iberia", AF: "Air France", KL: "KLM", BA: "British Airways" };
-const STALE_HOURS = 3;
+const STALE_HOURS = 14; // pinned runs twice daily (08:00 / 20:00 Brisbane)
 
 /* ------------------------------------------------------------------ *
  * Formatting
@@ -191,7 +191,7 @@ function heroCard(dest, entry, latest, lead) {
     card.append(
       h("p", { class: "price price--none" }, "No fare"),
       h("p", { class: "price-note" }, entry
-        ? "The last search for these dates came back empty. It runs again within the hour."
+        ? "The last search for these dates came back empty. It runs again at the next twice-daily fetch."
         : "Not searched yet."));
     return card;
   }
@@ -763,7 +763,7 @@ function renderFreshness(latest) {
 
   $("meta-updated").textContent = fmtStamp(latest.updatedAt);
   $("meta-updated-note").textContent = critical
-    ? `${rel}. Hourly runs are due through the Brisbane day — check the Actions tab.`
+    ? `${rel}. Twice-daily runs are due morning and evening Brisbane time — check the Actions tab.`
     : `${rel} · sweep cursor at ${latest.sweepCursor ?? 0}`;
 }
 
