@@ -18,19 +18,24 @@
   --surface-2: #f2f6f9;
   --ink: #0c1a22;
   --ink-2: #47606d;
-  --ink-3: #718895;
+  /* ink-3 carries every small secondary label, so it is held to WCAG AA (4.5:1)
+     on all three light grounds: 5.45:1 on --surface, 5.01:1 on --surface-2,
+     4.66:1 on --plane (the footer sits straight on the plane). */
+  --ink-3: #556d7a;
   --hair: #dce4e9;
   --hair-strong: #c3d0d7;
   --shadow: 0 1px 2px rgba(12, 26, 34, .05), 0 14px 30px -22px rgba(12, 26, 34, .35);
 
-  /* data */
-  --series-1: #2a78d6;
+  /* data — series 1 doubles as link/badge text, so it clears 4.5:1 on both
+     surfaces (5.26:1 / 4.84:1) while keeping CVD ΔE 9.1 against series 2. */
+  --series-1: #2568d2;
   --series-2: #c2489b;
   --good-ink: #006300;
   --bad-ink: #b8302f;
   --good-wash: #e4f4e4;
   --bad-wash: #fbe9e9;
-  --warn: #d98b00;
+  --warn: #d98b00;        /* fills only (gauge, dot) — too light for text */
+  --warn-ink: #8a5a00;    /* the same status as text: 5.93:1 / 5.45:1 */
   --bad: #d03b3b;
   --gauge-track: #cde2fb;
   --tooltip-bg: #ffffff;
@@ -66,13 +71,14 @@
     --hair-strong: #2c4453;
     --shadow: none;
 
-    --series-1: #3987e5;
+    --series-1: #4590ea;   /* 5.35:1 / 4.85:1 — the old #3987e5 was 4.35:1 on surface-2 */
     --series-2: #d55181;
     --good-ink: #0ca30c;
     --bad-ink: #e66767;
     --good-wash: #102d18;
     --bad-wash: #2e1618;
     --warn: #fab219;
+    --warn-ink: #fab219;   /* already 8.63:1 on surface-2 in dark */
     --bad: #e66767;
     --gauge-track: #184f95;
     --tooltip-bg: #152430;
@@ -311,7 +317,9 @@ section { min-width: 0; }
   white-space: nowrap;
 }
 .badge--latam { border-color: color-mix(in srgb, var(--series-1) 45%, transparent); color: var(--series-1); }
-.badge--under { border-color: color-mix(in srgb, var(--gold) 60%, transparent); color: var(--warn); margin-left: 8px; }
+.badge--under { border-color: color-mix(in srgb, var(--gold) 60%, transparent); color: var(--warn-ink); margin-left: 8px; }
+/* the pinned ideal-route row wears the ideal card's own colours: gold on the panel ink */
+.badge--ideal { background: var(--panel); border-color: var(--panel); color: var(--gold); }
 
 .price {
   font-size: clamp(2.7rem, 13vw, 3.9rem);
@@ -473,6 +481,7 @@ section { min-width: 0; }
 
 .segmented {
   display: inline-flex;
+  flex-wrap: wrap;
   padding: 3px;
   gap: 3px;
   border-radius: 9px;
@@ -592,6 +601,20 @@ section { min-width: 0; }
 .empty-cell { color: var(--ink-3); padding: 22px 12px; text-align: center; }
 .table-note { margin-top: 12px; font-size: 12.5px; color: var(--ink-3); max-width: 68ch; }
 .offers-table .badge { margin-left: 7px; }
+
+/* pinned ideal-route row — sits above the price sort, so it is marked twice:
+   the gold rule at the row head and the inverted chip beside the code. */
+.offers-table tr.is-ideal { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+.offers-table tr.is-ideal th[scope="row"] { border-left: 3px solid var(--gold); padding-left: 9px; }
+.offers-table tr.is-ideal td, .offers-table tr.is-ideal th { border-bottom-color: color-mix(in srgb, var(--gold) 34%, var(--hair)); }
+
+/* filters — airline and stops, each its own labelled group */
+.filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
+.filter-group { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.filter-label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3);
+}
 
 /* ---------- meta ---------- */
 

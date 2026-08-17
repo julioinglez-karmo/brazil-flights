@@ -599,10 +599,37 @@ function renderHeatControls(latest, daily) {
  * Section: offers — latest offers table + filter
  * ------------------------------------------------------------------ */
 
-let latamOnly = false;
+// "all" | "latam" | a validating carrier code, and a stops bucket.
+let offerAirline = "all";
+let offerStops = "all";
+
+const STOPS_BUCKETS = [
+  ["0-1", "≤1", "One outbound stop or fewer"],
+  ["2", "2", "Exactly two outbound stops"],
+  ["3+", "3+", "Three or more outbound stops"],
+];
+const stopsBucket = (n) => (n == null ? null : n <= 1 ? "0-1" : n === 2 ? "2" : "3+");
+
+// Identity of an offer for de-duping: same money, same metal, same routing.
+const offerSig = (r) =>
+  r.offer ? `${r.offer.priceAud2pax}|${(r.offer.outRoute ?? []).join(">")}|${r.offer.validating ?? ""}|${r.depDate}|${r.retDate}` : "";
 
 function offerRows(latest) {
   const rows = [];
+  // The ideal route is quoted against the pinned CWB pair, so it borrows those dates.
+  const idealDest = IDEAL_PATH.at(-1);
+  const idealPinned = latest.pinned?.[idealDest] ?? null;
+  const idealOffer = latest.idealRoute?.latest ?? null;
+  const ideal = idealOffer && idealPinned
+    ? {
+      dest: idealDest, kind: "Ideal route", ideal: true,
+      depDate: idealPinned.depDate, retDate: idealPinned.retDate,
+      price: idealOffer.priceAud2pax, offer: idealOffer,
+      ts: latest.idealRoute?.latestTs ?? idealPinned.ts,
+    }
+    : null;
+  const idealSig = ideal ? offerSig(ideal) : null;
+
   for (const [dest, p] of Object.entries(latest.pinned ?? {})) {
     if (p.cheapest) rows.push({ dest, kind: "Pinned dates", depDate: p.depDate, retDate: p.retDate, price: p.cheapest.priceAud2pax, offer: p.cheapest, ts: p.ts });
     if (p.cheapestLatam && p.cheapestLatam.priceAud2pax !== p.cheapest?.priceAud2pax) {
@@ -614,25 +641,45 @@ function offerRows(latest) {
     if (pinnedPair && b.depDate === pinnedPair.depDate && b.retDate === pinnedPair.retDate) continue;
     rows.push({ dest, kind: "Best flexible", depDate: b.depDate, retDate: b.retDate, price: b.priceAud2pax, offer: null, ts: b.ts });
   }
-  return rows.sort((a, b) => a.price - b.price);
+  rows.sort((a, b) => a.price - b.price);
+  // The ideal row is pinned on top; the same offer must not appear twice below it.
+  return ideal ? [ideal, ...rows.filter((r) => offerSig(r) !== idealSig)] : rows;
+}
+
+const offerFiltersActive = () => offerAirline !== "all" || offerStops !== "all";
+
+function offerPasses(r) {
+  if (!offerFiltersActive()) return true;
+  if (!r.offer) return false; // flexible-date rows carry a price only — no airline, no stops
+  if (offerAirline === "latam") { if (!isLatam(r.offer.validating)) return false; }
+  else if (offerAirline !== "all" && r.offer.validating !== offerAirline) return false;
+  if (offerStops !== "all" && stopsBucket(r.offer.outStops) !== offerStops) return false;
+  return true;
+}
+
+function idealBadge() {
+  return h("span", { class: "badge badge--ideal", title: "BNE → SYD → SCL → CWB on LATAM — pinned to the top" }, "Ideal");
 }
 
 function renderOffers(latest) {
   const body = $("offers-body");
   const note = $("offers-note");
+  const hiddenNote = $("offers-hidden-note");
   clear(body);
   const all = offerRows(latest);
-  const rows = latamOnly ? all.filter((r) => r.offer && isLatam(r.offer.validating)) : all;
+  const rows = all.filter(offerPasses);
+  const hiddenFlexible = offerFiltersActive() ? all.filter((r) => !r.offer).length : 0;
 
   if (!rows.length) {
     body.append(h("tr", null, h("td", { colspan: "7", class: "empty-cell" },
-      all.length ? "No LATAM-validated fare in the latest search." : "No offers in the latest search.")));
+      all.length && offerFiltersActive() ? "No offers match this filter." : "No offers in the latest search.")));
   }
   for (const r of rows) {
     const o = r.offer;
-    body.append(h("tr", null,
+    body.append(h("tr", { class: r.ideal ? "is-ideal" : null },
       h("th", { scope: "row", "data-slot": String(slotOf(r.dest)) },
         h("span", { class: "code code--sm" }, r.dest),
+        r.ideal ? idealBadge() : null,
         h("span", { class: "row-kind" }, r.kind)),
       h("td", { class: "num strong" }, aud(r.price)),
       h("td", { class: "nowrap" }, `${fmtDay(r.depDate)} → ${fmtDay(r.retDate)}`,
@@ -646,20 +693,57 @@ function renderOffers(latest) {
       h("td", { class: "num" }, o ? fmtDuration(o.outDurationMin) : "—"),
       h("td", null, h("a", { class: "row-link", href: googleFlightsUrl(r.dest, r.depDate, r.retDate), target: "_blank", rel: "noopener", "aria-label": `Open ${r.dest} ${fmtDay(r.depDate)} to ${fmtDay(r.retDate)} on Google Flights` }, "Book ↗"))));
   }
+  hiddenNote.hidden = hiddenFlexible === 0;
+  hiddenNote.textContent = hiddenFlexible
+    ? `${hiddenFlexible} flexible-date ${hiddenFlexible === 1 ? "row" : "rows"} hidden by the filter — those carry a price only, with no airline or stop count to match on.`
+    : "";
+
   const stamps = all.map((r) => r.ts).filter(Boolean).sort();
+  const pinnedLine = all.some((r) => r.ideal)
+    ? `The ideal route (${IDEAL_PATH.join(" → ")}) is pinned to the top; every other row is cheapest first. `
+    : "";
   note.textContent = stamps.length
-    ? `Flexible rows carry the price only — the full itinerary is re-checked when those dates come round in the sweep. Newest row from ${fmtStamp(stamps.at(-1))}.`
+    ? `${pinnedLine}Flexible rows carry the price only — the full itinerary is re-checked when those dates come round in the sweep. Newest row from ${fmtStamp(stamps.at(-1))}.`
     : "";
 }
 
 function renderOfferFilters(latest) {
   const box = $("offer-filters");
   clear(box);
-  const mk = (label, on, val) => h("button", {
-    type: "button", class: "seg" + (on ? " is-on" : ""), "aria-pressed": on ? "true" : "false",
-    on: { click: () => { latamOnly = val; renderOfferFilters(latest); renderOffers(latest); box.querySelector(".seg.is-on")?.focus(); } },
-  }, label);
-  box.append(mk("All", !latamOnly, false), mk("LATAM only", latamOnly, true));
+  const rows = offerRows(latest);
+  const carriers = [...new Set(rows.map((r) => r.offer?.validating).filter(Boolean))].sort();
+  // A carrier can vanish between renders; never leave the table filtered by a ghost.
+  if (offerAirline !== "all" && offerAirline !== "latam" && !carriers.includes(offerAirline)) offerAirline = "all";
+
+  const group = (name, label, opts, current, set) => {
+    const seg = h("div", { class: "segmented", role: "group", "aria-label": label });
+    for (const [val, text, title] of opts) {
+      seg.append(h("button", {
+        type: "button",
+        class: "seg" + (val === current ? " is-on" : ""),
+        "aria-pressed": val === current ? "true" : "false",
+        title: title ?? null,
+        on: {
+          click: () => {
+            set(val);
+            renderOfferFilters(latest);
+            renderOffers(latest);
+            $("offer-filters").querySelector(`[data-filter="${name}"] .seg.is-on`)?.focus();
+          },
+        },
+      }, text));
+    }
+    // The visible label repeats the group's accessible name — hide the duplicate.
+    return h("div", { class: "filter-group", "data-filter": name },
+      h("span", { class: "filter-label", "aria-hidden": "true" }, label), seg);
+  };
+
+  box.append(
+    group("airline", "Airline",
+      [["all", "All"], ["latam", "LATAM", "Any LATAM-validated fare"],
+        ...carriers.map((c) => [c, c, AIRLINE[c] ?? c])],
+      offerAirline, (v) => { offerAirline = v; }),
+    group("stops", "Stops", [["all", "All"], ...STOPS_BUCKETS], offerStops, (v) => { offerStops = v; }));
 }
 
 /* ------------------------------------------------------------------ *
