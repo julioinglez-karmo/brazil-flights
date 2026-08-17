@@ -1,0 +1,175 @@
+{
+  "search_metadata": {
+    "id": "68a1c3f4d2b7a1004e9f0a11",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/68a1c3f4d2b7a1004e9f0a11.json",
+    "created_at": "2026-08-17 02:00:04 UTC",
+    "processed_at": "2026-08-17 02:00:05 UTC",
+    "google_flights_url": "https://www.google.com/travel/flights",
+    "total_time_taken": 1.94
+  },
+  "search_parameters": {
+    "engine": "google_flights",
+    "hl": "en",
+    "gl": "au",
+    "departure_id": "BNE",
+    "arrival_id": "CWB",
+    "outbound_date": "2027-02-06",
+    "return_date": "2027-03-14",
+    "currency": "AUD",
+    "adults": 2,
+    "type": "1"
+  },
+  "best_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": { "name": "Brisbane Airport", "id": "BNE", "time": "2027-02-06 06:00" },
+          "arrival_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 07:35" },
+          "duration": 95,
+          "airplane": "Boeing 737",
+          "airline": "Qantas",
+          "flight_number": "QF 545",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        },
+        {
+          "departure_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 10:50" },
+          "arrival_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 11:30" },
+          "duration": 760,
+          "airplane": "Boeing 787",
+          "airline": "Qantas",
+          "flight_number": "QF 27",
+          "travel_class": "Economy",
+          "legroom": "31 in"
+        },
+        {
+          "departure_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 15:10" },
+          "arrival_airport": { "name": "Afonso Pena International Airport", "id": "CWB", "time": "2027-02-06 20:45" },
+          "duration": 275,
+          "airplane": "Airbus A320",
+          "airline": "LATAM",
+          "flight_number": "LA 630",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        }
+      ],
+      "layovers": [
+        { "duration": 195, "name": "Sydney Kingsford Smith Airport", "id": "SYD" },
+        { "duration": 220, "name": "Arturo Merino Benitez International Airport", "id": "SCL" }
+      ],
+      "total_duration": 1785,
+      "carbon_emissions": { "this_flight": 1842000, "typical_for_this_route": 1790000, "difference_percent": 3 },
+      "price": 3480,
+      "type": "Round trip",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/QF.png",
+      "departure_token": "WyJDalJJZFhWWFEyOU5SbFZCUmxWQlEwRkJSMEZCIiwiUUYgNTQ1Il0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": { "name": "Brisbane Airport", "id": "BNE", "time": "2027-02-06 09:15" },
+          "arrival_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 10:50" },
+          "duration": 95,
+          "airplane": "Airbus A320",
+          "airline": "LATAM",
+          "flight_number": "LA 8021",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        },
+        {
+          "departure_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 13:40" },
+          "arrival_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 14:35" },
+          "duration": 775,
+          "airplane": "Boeing 787",
+          "airline": "LATAM",
+          "flight_number": "LA 802",
+          "travel_class": "Economy",
+          "legroom": "31 in"
+        },
+        {
+          "departure_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 18:05" },
+          "arrival_airport": { "name": "Afonso Pena International Airport", "id": "CWB", "time": "2027-02-06 23:40" },
+          "duration": 275,
+          "airplane": "Airbus A320",
+          "airline": "LATAM",
+          "flight_number": "LA 630",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        }
+      ],
+      "layovers": [
+        { "duration": 170, "name": "Sydney Kingsford Smith Airport", "id": "SYD" },
+        { "duration": 210, "name": "Arturo Merino Benitez International Airport", "id": "SCL" }
+      ],
+      "total_duration": 1805,
+      "carbon_emissions": { "this_flight": 1798000, "typical_for_this_route": 1790000, "difference_percent": 0 },
+      "price": 3765,
+      "type": "Round trip",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/LA.png",
+      "departure_token": "WyJDalJJZFhWWFEyOU5SbFZCUmxWQlEwRkJSMEZDIiwiTEEgODAyMSJd"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": { "name": "Brisbane Airport", "id": "BNE", "time": "2027-02-06 09:15" },
+          "arrival_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 10:50" },
+          "duration": 95,
+          "airplane": "Airbus A320",
+          "airline": "LATAM",
+          "flight_number": "LA 8021",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        },
+        {
+          "departure_airport": { "name": "Sydney Kingsford Smith Airport", "id": "SYD", "time": "2027-02-06 13:40" },
+          "arrival_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 14:35" },
+          "duration": 775,
+          "airplane": "Boeing 787",
+          "airline": "LATAM",
+          "flight_number": "LA 802",
+          "travel_class": "Economy",
+          "legroom": "31 in"
+        },
+        {
+          "departure_airport": { "name": "Arturo Merino Benitez International Airport", "id": "SCL", "time": "2027-02-06 22:15" },
+          "arrival_airport": { "name": "Guarulhos International Airport", "id": "GRU", "time": "2027-02-07 03:50" },
+          "duration": 275,
+          "airplane": "Boeing 787",
+          "airline": "LATAM",
+          "flight_number": "LA 750",
+          "travel_class": "Economy",
+          "legroom": "31 in"
+        },
+        {
+          "departure_airport": { "name": "Guarulhos International Airport", "id": "GRU", "time": "2027-02-07 08:30" },
+          "arrival_airport": { "name": "Afonso Pena International Airport", "id": "CWB", "time": "2027-02-07 09:35" },
+          "duration": 65,
+          "airplane": "Airbus A319",
+          "airline": "LATAM Brasil",
+          "flight_number": "JJ 3412",
+          "travel_class": "Economy",
+          "legroom": "30 in"
+        }
+      ],
+      "layovers": [
+        { "duration": 170, "name": "Sydney Kingsford Smith Airport", "id": "SYD" },
+        { "duration": 460, "name": "Arturo Merino Benitez International Airport", "id": "SCL" },
+        { "duration": 280, "name": "Guarulhos International Airport", "id": "GRU" }
+      ],
+      "total_duration": 2175,
+      "carbon_emissions": { "this_flight": 1965000, "typical_for_this_route": 1790000, "difference_percent": 10 },
+      "price": 3610,
+      "type": "Round trip",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/LA.png",
+      "departure_token": "WyJDalJJZFhWWFEyOU5SbFZCUmxWQlEwRkJSMEZEIiwiTEEgODAyMSJd"
+    }
+  ],
+  "price_insights": {
+    "lowest_price": 3480,
+    "price_level": "typical",
+    "typical_price_range": [3400, 4600]
+  }
+}
