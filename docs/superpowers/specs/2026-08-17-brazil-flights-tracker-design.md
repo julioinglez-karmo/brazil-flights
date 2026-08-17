@@ -92,8 +92,9 @@ max offers ~20), record:
    marketing carriers, stop count, total duration, full segment route.
 2. **Cheapest LATAM offer** — same fields, filtered to LATAM group carriers
    (LA/JJ/4M/XL etc.).
-3. **Ideal-route match** — cheapest offer whose outbound path matches
-   BNE → SYD → SCL → CWB (flagged specially).
+3. **Ideal-route match** — cheapest LATAM-validated offer whose outbound
+   path matches BNE → SYD → SCL → CWB (flagged specially; a non-LATAM
+   offer on the same path counts only toward "cheapest overall").
 Any of 2–3 may be absent; that is recorded explicitly, not silently dropped.
 
 ### Environment caveat

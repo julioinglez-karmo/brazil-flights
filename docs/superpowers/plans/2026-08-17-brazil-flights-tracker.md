@@ -318,7 +318,7 @@ git commit -m "feat: monthly API call budget accounting with month rollover"
   - `parseDurationMin(iso: "PT32H50M") -> number` (minutes; handles missing H or M part)
   - `OfferSummary` type used by Tasks 6, 7, 9: `{ priceAud2pax: number, validating: string, carriers: string[], outRoute: string[], backRoute: string[], outStops: number, outDurationMin: number }`
   - `offerSummary(offer) -> OfferSummary`
-  - `extractSearch(body, {latamCarriers, idealRoutePath, dest}) -> {cheapest: OfferSummary|null, cheapestLatam: OfferSummary|null, idealRoute: OfferSummary|null}` — LATAM = `validating` in `latamCarriers`; idealRoute = cheapest offer whose `outRoute` deep-equals `idealRoutePath` (only checked when `dest === idealRoutePath.at(-1)`); empty/missing `body.data` → all three null.
+  - `extractSearch(body, {latamCarriers, idealRoutePath, dest}) -> {cheapest: OfferSummary|null, cheapestLatam: OfferSummary|null, idealRoute: OfferSummary|null}` — LATAM = `validating` in `latamCarriers`; idealRoute = cheapest LATAM-validating offer whose `outRoute` deep-equals `idealRoutePath` (only checked when `dest === idealRoutePath.at(-1)`; the spec's ideal-route card is explicitly the LATAM itinerary, so non-LATAM offers on the same path do not qualify); empty/missing `body.data` → all three null.
 
 - [ ] **Step 1: Create the fixture**
 
@@ -493,7 +493,7 @@ export function extractSearch(body, { latamCarriers, idealRoutePath, dest }) {
   const latam = all.filter((s) => latamCarriers.includes(s.validating));
   const ideal =
     dest === idealRoutePath.at(-1)
-      ? all.filter((s) => JSON.stringify(s.outRoute) === JSON.stringify(idealRoutePath))
+      ? all.filter((s) => latamCarriers.includes(s.validating) && JSON.stringify(s.outRoute) === JSON.stringify(idealRoutePath))
       : [];
   return { cheapest: cheapestOf(all), cheapestLatam: cheapestOf(latam), idealRoute: cheapestOf(ideal) };
 }
