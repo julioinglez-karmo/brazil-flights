@@ -42,3 +42,20 @@ jobs:
             --title "✈️ Price alert: A\$${{ steps.fetch.outputs.alert_price }} for 2 pax (target hit)" \
             --body "The pinned BNE→Brazil round trip dropped to **A\$${{ steps.fetch.outputs.alert_price }}** for 2 passengers. Check the dashboard." \
             --repo "$GITHUB_REPOSITORY"
+      # The digest reads the data the fetch step just wrote, so it always
+      # describes this run. Recipients live in MAIL_TO, never in the repo.
+      - name: Build email digest
+        id: digest
+        run: node scripts/email.mjs --out "$RUNNER_TEMP/digest.html"
+      - name: Send email digest
+        uses: dawidd6/action-send-mail@v18
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_APP_PASSWORD }}
+          from: Southbound Tracker <${{ secrets.MAIL_USERNAME }}>
+          to: ${{ secrets.MAIL_TO }}
+          subject: ${{ steps.digest.outputs.subject }}
+          html_body: file://${{ runner.temp }}/digest.html
