@@ -204,13 +204,18 @@ Amadeus' ~1950, a ~9x cut, so the schedule shrinks accordingly:
 | Pinned | hourly, 06:00–22:00 Brisbane | twice daily, 08:00 & 20:00 Brisbane |
 | Sweep grid | 108 units (Feb 1–27 step 2 × 5 lengths) | 34 units (Feb 1–25 step 4 × 3 lengths) |
 | Sweep batch | 30/day | 4/day |
-| Monthly cap | 1950 | 240 |
+| Monthly cap | 1950 | 235 |
 
-At 4 pinned + 4 sweep calls a day this fits a 30-day month exactly; in a
-31-day month the existing budget guard trims the tail, which is the designed
-degradation. The full sweep grid now recycles every ~8.5 days instead of
-~3.6. The dashboard's freshness threshold moves from 3h to 14h to match the
-twice-daily cadence, keeping the Brisbane-daytime escalation rule.
+At 4 pinned + 4 sweep calls a day the nominal spend is 240 in a 30-day month
+and 248 in a 31-day one. The cap is deliberately set *below* both, at 235,
+because retries are not counted against the counter — the 15-call gap to the
+real 250/month limit is slack for 429/5xx retry storms. The existing budget
+guard absorbs the difference by trimming the last searches of the month
+(logging a `::notice::` and advancing the sweep cursor by only the calls
+actually made), which is the designed degradation. The full sweep grid now
+recycles every ~8.5 days instead of ~3.6. The dashboard's freshness threshold
+moves from 3h to 14h to match the twice-daily cadence, keeping the
+Brisbane-daytime escalation rule.
 
 **Testing.** `tests/fixtures/serpapi-cwb.json` replaces the Amadeus fixture,
 modelling the same three-way discrimination (cheapest overall ≠ cheapest LATAM

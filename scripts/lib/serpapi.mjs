@@ -19,10 +19,25 @@ export class SerpApiClient {
   }
 
   fail(message) {
-    return new Error(this.redact(message));
+    const err = new Error(this.redact(message));
+    err.redacted = true; // already clean — the outer guard rethrows it untouched
+    return err;
   }
 
-  async searchFlightOffers({ origin, dest, depDate, retDate, adults, currency }) {
+  async searchFlightOffers(params) {
+    try {
+      return await this.#search(params);
+    } catch (err) {
+      if (err?.redacted) throw err;
+      // Anything the fetch implementation itself throws (DNS failure, timeout, an undici
+      // message quoting the request URL) also carries the key. fetch.mjs writes err.message
+      // into history.jsonl in a public repo, so nothing escapes unredacted. The original
+      // error is deliberately not attached as `cause`: Node prints cause chains.
+      throw this.fail(String(err?.message ?? err));
+    }
+  }
+
+  async #search({ origin, dest, depDate, retDate, adults, currency }) {
     const url = new URL(ENDPOINT);
     url.searchParams.set("engine", "google_flights");
     url.searchParams.set("departure_id", origin);

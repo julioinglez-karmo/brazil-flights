@@ -9,7 +9,7 @@
     "latestReturn": "2027-03-31",
     "dailyCallBudget": 4
   },
-  "monthlyCallBudget": 240,
+  "monthlyCallBudget": 235,
   "targetPriceAud2pax": 4500,
   "latamCarriers": ["LA", "JJ", "XL", "LU", "LP", "PZ", "4C", "4M"],
   "idealRoutePath": ["BNE", "SYD", "SCL", "CWB"],

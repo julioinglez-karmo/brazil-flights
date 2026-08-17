@@ -80,6 +80,32 @@ test("HTTP 200 body-level error throws immediately", async () => {
   assert.equal(attempts, 1, "body-level error is not retried");
 });
 
+test("errors thrown by fetchImpl itself are redacted before propagating", async () => {
+  // Network failures, timeouts and undici messages can embed the request URL — and the URL
+  // carries the key. fetch.mjs writes err.message into history.jsonl, which is a public repo.
+  const throwers = [
+    async () => { throw new Error(`boom api_key=${KEY} fail`); },
+    async () => { throw new Error(`request to https://serpapi.com/search.json?engine=google_flights&api_key=${KEY} failed`); },
+  ];
+  for (const fetchImpl of throwers) {
+    const c = new SerpApiClient({ apiKey: KEY, fetchImpl, sleepImpl: async () => {} });
+    const err = await c.searchFlightOffers(search).then(() => null, (e) => e);
+    assert.ok(err, "expected a rejection");
+    const msg = String(err.message ?? err);
+    assert.ok(!msg.includes(KEY), `api_key leaked in: ${msg}`);
+    assert.match(msg, /api_key=\*\*\*/, "key should be redacted, not merely absent");
+  }
+});
+
+test("a non-Error thrown by fetchImpl is still redacted", async () => {
+  const fetchImpl = async () => { throw `raw string api_key=${KEY}`; };
+  const c = new SerpApiClient({ apiKey: KEY, fetchImpl, sleepImpl: async () => {} });
+  const err = await c.searchFlightOffers(search).then(() => null, (e) => e);
+  const msg = String(err?.message ?? err);
+  assert.ok(!msg.includes(KEY), `api_key leaked in: ${msg}`);
+  assert.match(msg, /api_key=\*\*\*/);
+});
+
 test("api_key never leaks into thrown error messages", async () => {
   const cases = [
     async () => jsonResponse(500, { debug: `failed for api_key=${KEY}` }),

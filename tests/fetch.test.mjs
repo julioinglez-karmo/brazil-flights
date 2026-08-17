@@ -55,7 +55,7 @@ test("sweep mode advances cursor and respects batch size", async () => {
 test("budget exhaustion stops before searching", async () => {
   const dir = setup();
   const seeded = JSON.parse(readFileSync(join(dir, "data/latest.json"), "utf8"));
-  seeded.budget = { month: "2026-08", callsUsed: 240, cap: 240 };
+  seeded.budget = { month: "2026-08", callsUsed: 235, cap: 235 };
   writeFileSync(join(dir, "data/latest.json"), JSON.stringify(seeded));
   const log = [];
   const { records } = await runFetch({
@@ -138,7 +138,7 @@ test("GITHUB_OUTPUT no repeat alert: true to true writes nothing", async () => {
 test("partial-trim sweep cursor: budget exhaustion mid-batch", async () => {
   const dir = setup();
   const seeded = JSON.parse(readFileSync(join(dir, "data/latest.json"), "utf8"));
-  seeded.budget = { month: "2026-08", callsUsed: 238, cap: 240 };
+  seeded.budget = { month: "2026-08", callsUsed: 233, cap: 235 };
   seeded.sweepCursor = 0;
   writeFileSync(join(dir, "data/latest.json"), JSON.stringify(seeded));
 
@@ -150,5 +150,5 @@ test("partial-trim sweep cursor: budget exhaustion mid-batch", async () => {
 
   assert.equal(log.length, 2, "should make exactly 2 searches (remaining budget)");
   assert.equal(latest.sweepCursor, 2, "cursor should advance by 2");
-  assert.equal(latest.budget.callsUsed, 240, "budget should reach cap");
+  assert.equal(latest.budget.callsUsed, 235, "budget should reach cap");
 });
