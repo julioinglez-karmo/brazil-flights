@@ -1,11 +1,23 @@
 {
-  "updatedAt": null,
-  "sweepCursor": 0,
-  "budget": { "month": null, "callsUsed": 0, "cap": 1950 },
-  "pinned": {},
-  "deltas": {},
-  "idealRoute": { "latest": null, "latestTs": null, "lastSeen": null },
-  "bestInWindow": {},
-  "allTimeLow": {},
-  "alert": { "active": false, "priceAud2pax": null, "targetAud2pax": 4500 }
+ "updatedAt": "2026-08-17T09:28:41.896Z",
+ "sweepCursor": 0,
+ "budget": {
+  "month": "2026-08",
+  "callsUsed": 2,
+  "cap": 1950
+ },
+ "pinned": {},
+ "deltas": {},
+ "idealRoute": {
+  "latest": null,
+  "latestTs": null,
+  "lastSeen": null
+ },
+ "bestInWindow": {},
+ "allTimeLow": {},
+ "alert": {
+  "active": false,
+  "priceAud2pax": null,
+  "targetAud2pax": 4500
+ }
 }
