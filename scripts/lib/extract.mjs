@@ -39,7 +39,10 @@ export function extractSearch(body, { latamCarriers, idealRoutePath, dest }) {
   const latam = all.filter((s) => latamCarriers.includes(s.validating));
   const ideal =
     dest === idealRoutePath.at(-1)
-      ? all.filter((s) => latamCarriers.includes(s.validating) && JSON.stringify(s.outRoute) === JSON.stringify(idealRoutePath))
+      ? all.filter((s) =>
+          // Ideal-route offers must be LATAM-validated; non-LATAM offers on the same path count only toward cheapest overall
+          latamCarriers.includes(s.validating) && JSON.stringify(s.outRoute) === JSON.stringify(idealRoutePath)
+        )
       : [];
   return { cheapest: cheapestOf(all), cheapestLatam: cheapestOf(latam), idealRoute: cheapestOf(ideal) };
 }

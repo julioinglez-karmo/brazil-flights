@@ -27,6 +27,7 @@ test("extractSearch picks cheapest, cheapest LATAM, and ideal route independentl
   assert.equal(r.cheapestLatam.priceAud2pax, 3610);
   assert.deepEqual(r.cheapestLatam.carriers, ["LA", "JJ"]);
   assert.equal(r.idealRoute.priceAud2pax, 3765.4); // offer 2: only all-LATAM BNE>SYD>SCL>CWB
+  assert.equal(r.idealRoute.validating, "LA", "ideal route must be LATAM-validated (excludes non-LATAM offer 1 despite matching route and lower price)");
 });
 
 test("extractSearch handles empty and non-matching dest", () => {
