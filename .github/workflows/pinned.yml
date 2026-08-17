@@ -1,7 +1,7 @@
 name: pinned
 on:
   schedule:
-    - cron: "0 20-23,0-12 * * *" # hourly 06:00-22:00 Brisbane (UTC+10)
+    - cron: "0 10,22 * * *" # twice daily: 20:00 and 08:00 Brisbane (UTC+10)
   workflow_dispatch:
 concurrency:
   group: fetch
@@ -20,9 +20,7 @@ jobs:
       - id: fetch
         run: node scripts/fetch.mjs --mode pinned
         env:
-          AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
-          AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
-          AMADEUS_ENV: ${{ vars.AMADEUS_ENV || 'test' }}
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"

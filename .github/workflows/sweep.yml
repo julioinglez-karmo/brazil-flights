@@ -20,9 +20,7 @@ jobs:
       - id: fetch
         run: node scripts/fetch.mjs --mode sweep
         env:
-          AMADEUS_CLIENT_ID: ${{ secrets.AMADEUS_CLIENT_ID }}
-          AMADEUS_CLIENT_SECRET: ${{ secrets.AMADEUS_CLIENT_SECRET }}
-          AMADEUS_ENV: ${{ vars.AMADEUS_ENV || 'test' }}
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
