@@ -5,7 +5,8 @@ export class AmadeusClient {
   constructor({ clientId, clientSecret, env = "test", fetchImpl = fetch, sleepImpl }) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.base = BASES[env] ?? BASES.test;
+    if (!BASES[env]) throw new Error(`unknown AMADEUS_ENV: ${env}`);
+    this.base = BASES[env];
     this.fetchImpl = fetchImpl;
     this.sleepImpl = sleepImpl ?? ((ms) => new Promise((r) => setTimeout(r, ms)));
     this.accessToken = null;

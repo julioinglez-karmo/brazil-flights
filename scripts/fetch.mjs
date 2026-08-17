@@ -21,12 +21,13 @@ export async function runFetch({ mode, dataDir, configPath, client, now }) {
   let budget = normalizeBudget(prevLatest.budget, now, config.monthlyCallBudget);
   let sweepCursor = prevLatest.sweepCursor ?? 0;
 
+  let grid = null;
   let units;
   if (mode === "pinned") {
     const { depDate, retDate } = config.pinned;
     units = config.destinations.map((dest) => ({ dest, depDate, retDate, tripDays: daysBetween(depDate, retDate) }));
   } else if (mode === "sweep") {
-    const grid = sweepGrid(config);
+    grid = sweepGrid(config);
     const batch = nextSweepBatch(grid, sweepCursor, config.sweep.dailyCallBudget);
     units = batch.units;
     sweepCursor = batch.nextCursor;
@@ -38,7 +39,7 @@ export async function runFetch({ mode, dataDir, configPath, client, now }) {
   if (allowed < units.length) {
     console.log(`::notice::budget limits run to ${allowed}/${units.length} searches (used ${budget.callsUsed}/${budget.cap})`);
     units = units.slice(0, allowed);
-    if (mode === "sweep") sweepCursor = (prevLatest.sweepCursor + allowed) % sweepGrid(config).length;
+    if (mode === "sweep") sweepCursor = ((prevLatest.sweepCursor ?? 0) + allowed) % grid.length;
   }
 
   const records = [];

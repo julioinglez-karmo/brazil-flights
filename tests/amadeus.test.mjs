@@ -59,3 +59,10 @@ test("retries 429 then succeeds; gives up after 3 attempts on 500", async () => 
   );
   assert.equal(searchAttempts, 3);
 });
+
+test("throws on unknown AMADEUS_ENV", () => {
+  assert.throws(
+    () => new AmadeusClient({ clientId: "i", clientSecret: "s", env: "prod", fetchImpl: fetch }),
+    /unknown AMADEUS_ENV/
+  );
+});
