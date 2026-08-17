@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runFetch } from "../scripts/fetch.mjs";
 
-const fixture = JSON.parse(readFileSync(new URL("./fixtures/amadeus-cwb.json", import.meta.url)));
+const fixture = JSON.parse(readFileSync(new URL("./fixtures/serpapi-cwb.json", import.meta.url)));
 
 function setup() {
   const dir = mkdtempSync(join(tmpdir(), "bf-"));
@@ -16,7 +16,7 @@ function setup() {
 const fakeClient = (log = []) => ({
   searchFlightOffers: async (params) => {
     log.push(params);
-    if (params.dest === "GRU") throw new Error("Amadeus search failed: 500");
+    if (params.dest === "GRU") throw new Error("SerpAPI search failed: 500");
     return fixture;
   },
 });
@@ -36,7 +36,7 @@ test("pinned mode: 2 searches, error recorded as row, files updated", async () =
   const history = readFileSync(join(dir, "data/history.jsonl"), "utf8").trim().split("\n");
   assert.equal(history.length, 2);
   assert.equal(latest.budget.callsUsed, 2);
-  assert.equal(latest.pinned.CWB.cheapest.priceAud2pax, 3480.1);
+  assert.equal(latest.pinned.CWB.cheapest.priceAud2pax, 3480);
   const onDisk = JSON.parse(readFileSync(join(dir, "data/latest.json"), "utf8"));
   assert.deepEqual(onDisk, latest);
 });
@@ -71,7 +71,7 @@ test("empty search result records status empty with null extractions", async () 
   const emptyClient = (log = []) => ({
     searchFlightOffers: async (params) => {
       log.push(params);
-      if (params.dest === "CWB") return { data: [] };
+      if (params.dest === "CWB") return { best_flights: [], other_flights: [] };
       return fixture;
     },
   });

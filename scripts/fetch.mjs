@@ -3,9 +3,9 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { sweepGrid, nextSweepBatch, daysBetween } from "./lib/dates.mjs";
 import { normalizeBudget, remainingCalls, recordCalls } from "./lib/budget.mjs";
-import { extractSearch } from "./lib/extract.mjs";
+import { extractSerpSearch } from "./lib/extract.mjs";
 import { deriveDaily, deriveLatest } from "./lib/aggregate.mjs";
-import { AmadeusClient } from "./lib/amadeus.mjs";
+import { SerpApiClient } from "./lib/serpapi.mjs";
 
 function readHistory(path) {
   if (!existsSync(path)) return [];
@@ -48,9 +48,9 @@ export async function runFetch({ mode, dataDir, configPath, client, now }) {
     try {
       const body = await client.searchFlightOffers({
         origin: config.origin, dest: u.dest, depDate: u.depDate, retDate: u.retDate,
-        adults: config.adults, currency: config.currency, maxOffers: config.maxOffers,
+        adults: config.adults, currency: config.currency,
       });
-      const ex = extractSearch(body, { latamCarriers: config.latamCarriers, idealRoutePath: config.idealRoutePath, dest: u.dest });
+      const ex = extractSerpSearch(body, { latamCarriers: config.latamCarriers, idealRoutePath: config.idealRoutePath, dest: u.dest });
       records.push({ ...base, status: ex.cheapest ? "ok" : "empty", ...ex });
     } catch (err) {
       records.push({ ...base, status: "error", cheapest: null, cheapestLatam: null, idealRoute: null, error: String(err.message ?? err) });
@@ -79,11 +79,7 @@ export async function runFetch({ mode, dataDir, configPath, client, now }) {
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split("/").at(-1));
 if (isMain) {
   const { values } = parseArgs({ options: { mode: { type: "string" }, dataDir: { type: "string", default: "data" }, configPath: { type: "string", default: "config.json" } } });
-  const client = new AmadeusClient({
-    clientId: process.env.AMADEUS_CLIENT_ID,
-    clientSecret: process.env.AMADEUS_CLIENT_SECRET,
-    env: process.env.AMADEUS_ENV || "test",
-  });
+  const client = new SerpApiClient({ apiKey: process.env.SERPAPI_API_KEY });
   runFetch({ mode: values.mode, dataDir: values.dataDir, configPath: values.configPath, client, now: new Date() })
     .catch((err) => { console.error(err); process.exit(1); });
 }
