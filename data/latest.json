@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-08-18T14:02:37.278Z",
+ "updatedAt": "2026-08-18T22:17:44.272Z",
  "sweepCursor": 12,
  "budget": {
   "month": "2026-08",
-  "callsUsed": 20,
+  "callsUsed": 22,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-08-18T10:22:32.889Z",
+   "ts": "2026-08-18T22:17:44.272Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5648,
+    "priceAud2pax": 5647,
     "validating": "AA",
     "carriers": [
      "AA",
@@ -31,11 +31,11 @@
    "cheapestLatam": null
   },
   "GRU": {
-   "ts": "2026-08-18T10:22:32.889Z",
+   "ts": "2026-08-18T22:17:44.272Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5478,
+    "priceAud2pax": 5139,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -56,17 +56,17 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 4,
+   "vsYesterdayAud": 3,
    "vs7dAud": null
   },
   "GRU": {
-   "vsYesterdayAud": 379,
+   "vsYesterdayAud": 40,
    "vs7dAud": null
   }
  },
  "idealRoute": {
   "latest": null,
-  "latestTs": "2026-08-18T10:22:32.889Z",
+  "latestTs": "2026-08-18T22:17:44.272Z",
   "lastSeen": null
  },
  "bestInWindow": {
@@ -78,11 +78,11 @@
    "ts": "2026-08-17T13:58:21.362Z"
   },
   "GRU": {
-   "priceAud2pax": 5478,
+   "priceAud2pax": 5139,
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "tripDays": 36,
-   "ts": "2026-08-18T10:22:32.889Z"
+   "ts": "2026-08-18T22:17:44.272Z"
   }
  },
  "allTimeLow": {
