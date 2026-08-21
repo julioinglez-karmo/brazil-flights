@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-08-21T10:24:29.912Z",
- "sweepCursor": 20,
+ "updatedAt": "2026-08-21T14:04:19.746Z",
+ "sweepCursor": 24,
  "budget": {
   "month": "2026-08",
-  "callsUsed": 40,
+  "callsUsed": 44,
   "cap": 235
  },
  "pinned": {
@@ -77,11 +77,11 @@
    "ts": "2026-08-17T13:58:21.362Z"
   },
   "GRU": {
-   "priceAud2pax": 3820,
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14",
-   "tripDays": 36,
-   "ts": "2026-08-21T10:24:29.912Z"
+   "priceAud2pax": 3819,
+   "depDate": "2027-02-05",
+   "retDate": "2027-03-07",
+   "tripDays": 30,
+   "ts": "2026-08-21T14:04:19.746Z"
   }
  },
  "allTimeLow": {
@@ -92,10 +92,10 @@
    "retDate": "2027-03-22"
   },
   "GRU": {
-   "priceAud2pax": 3820,
-   "ts": "2026-08-20T10:23:53.871Z",
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14"
+   "priceAud2pax": 3819,
+   "ts": "2026-08-21T14:04:19.746Z",
+   "depDate": "2027-02-05",
+   "retDate": "2027-03-07"
   }
  },
  "alert": {
