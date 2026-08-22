@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-08-22T13:49:21.619Z",
+ "updatedAt": "2026-08-22T22:16:18.501Z",
  "sweepCursor": 28,
  "budget": {
   "month": "2026-08",
-  "callsUsed": 52,
+  "callsUsed": 54,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-08-22T10:17:42.404Z",
+   "ts": "2026-08-22T22:16:18.501Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -31,7 +31,7 @@
    "cheapestLatam": null
   },
   "GRU": {
-   "ts": "2026-08-22T10:17:42.404Z",
+   "ts": "2026-08-22T22:16:18.501Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -65,7 +65,7 @@
  },
  "idealRoute": {
   "latest": null,
-  "latestTs": "2026-08-22T10:17:42.404Z",
+  "latestTs": "2026-08-22T22:16:18.501Z",
   "lastSeen": null
  },
  "bestInWindow": {
@@ -81,7 +81,7 @@
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "tripDays": 36,
-   "ts": "2026-08-22T10:17:42.404Z"
+   "ts": "2026-08-22T22:16:18.501Z"
   }
  },
  "allTimeLow": {
