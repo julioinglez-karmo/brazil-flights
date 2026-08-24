@@ -1,7 +1,7 @@
 name: pinned
 on:
   schedule:
-    - cron: "0 10,22 * * *" # twice daily: 20:00 and 08:00 Brisbane (UTC+10)
+    - cron: "0 4,10,22 * * *" # three times daily: 14:00, 20:00 and 08:00 Brisbane (UTC+10)
   workflow_dispatch:
 concurrency:
   group: fetch
