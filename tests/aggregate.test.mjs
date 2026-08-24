@@ -55,6 +55,21 @@ test("deriveDaily builds a daily minimum per watched route", () => {
   assert.deepEqual(d.routeDaily.viaSyd, { "2026-08-17": 6100 });
 });
 
+test("routeDaily's daily minimum, not the latest reading, is what a movement delta must use", () => {
+  // Regression for the primary-route hero: 23 Aug's two viaMel readings were 5642 then
+  // 5687 (in that order). assets/app.js's routeMove() must diff routeDaily's minima
+  // (5642 vs the prior day) — never latest.json's `current.priceAud2pax` (5687, the
+  // *latest* reading, not the day's cheapest) — or the hero and the route panel below
+  // it disagree on whether the price rose or fell.
+  const records = [
+    rec({ ts: "2026-08-17T02:00:00Z", routes: { viaMel: offer(5644, MEL), viaSyd: null } }),
+    rec({ ts: "2026-08-23T22:00:00Z", routes: { viaMel: offer(5642, MEL), viaSyd: null } }),
+    rec({ ts: "2026-08-23T22:16:00Z", routes: { viaMel: offer(5687, MEL), viaSyd: null } }),
+  ];
+  const d = deriveDaily(records, now);
+  assert.deepEqual(d.routeDaily.viaMel, { "2026-08-17": 5644, "2026-08-23": 5642 });
+});
+
 test("routeDaily narrows to the pinned pair when given its keys", () => {
   const records = [
     rec({ ts: "2026-08-17T02:00:00Z", routes: { viaMel: offer(5700, MEL), viaSyd: null } }),
@@ -107,7 +122,11 @@ test("a pre-redesign row's idealRoute is read as the viaSyd watch slot", () => {
   assert.equal(l.routes.viaSyd.current.priceAud2pax, 4050);
   assert.equal(l.routes.viaSyd.lastSeen.ts, "2026-08-17T05:00:00Z");
   assert.equal(l.routes.viaMel.current, null, "nothing in the row speaks for the via-MEL path");
-  assert.equal(deriveDaily([legacy], now).routeDaily.viaSyd["2026-08-17"], 4050);
+  // Like the cheapest-recovery path below, the idealRoute shim now needs to be told
+  // viaSyd is actually watched — it no longer fires on watchedRoutes' default of [].
+  assert.equal(deriveDaily([legacy], now).routeDaily.viaSyd, undefined);
+  const d = deriveDaily([legacy], now, { watchedRoutes: config.watchedRoutes });
+  assert.equal(d.routeDaily.viaSyd["2026-08-17"], 4050);
 });
 
 test("a pre-redesign row whose cheapest lies on a watched path fills that slot exactly", () => {
@@ -138,6 +157,19 @@ test("a pre-redesign row with nothing on a watched path leaves every slot null",
   assert.equal(l.routes.viaSyd.lastSeen, null);
   assert.equal(l.routes.viaMel.current, null);
   assert.equal(l.pinned.CWB.cheapest.priceAud2pax, 4000, "the row still counts as the pinned quote");
+});
+
+test("the legacy idealRoute shim does not resurrect a de-configured route", () => {
+  // If viaSyd were ever dropped from config.watchedRoutes, the legacy `idealRoute`
+  // fallback must not grow a `routes.viaSyd` slot behind its back — routeDaily
+  // (and every other derived output) may only ever carry currently watched routes.
+  const watchedRoutes = config.watchedRoutes.filter((r) => r.id !== "viaSyd");
+  const legacy = legacyRow({ ts: "2026-08-17T05:00:00Z", cheapest: offer(3900, OFF_PATH), idealRoute: offer(4050, SYD) });
+  const d = deriveDaily([legacy], now, { watchedRoutes });
+  assert.equal(d.routeDaily.viaSyd, undefined, "no viaSyd series when it isn't watched");
+  assert.deepEqual(Object.keys(d.routeDaily), [], "the off-path row matches no configured route either");
+  const l = deriveLatest([legacy], { config: { ...config, watchedRoutes }, budget, sweepCursor: 5, now });
+  assert.deepEqual(Object.keys(l.routes), ["viaMel"], "deriveLatest's own route slots are unaffected either way");
 });
 
 /* ---------------------------------------------------------------- *

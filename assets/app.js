@@ -187,12 +187,16 @@ const routeSeries = (daily, route) =>
   Object.entries(daily.routeDaily?.[route.id] ?? {}).sort((a, b) => (a[0] < b[0] ? -1 : 1));
 
 // latest.json carries no per-route delta, but daily.json's per-route series does:
-// compare today's price with the most recent earlier day that recorded this route.
-function routeMove(daily, route, price) {
-  if (price == null) return null;
+// compare the latest day's minimum with the most recent earlier day that recorded
+// this route. Both sides of the delta must be daily minima — comparing the live
+// `current` reading (which may be a later, pricier quote than the day's cheapest)
+// against a prior day's minimum understates or inverts the real movement.
+function routeMove(daily, route) {
   const series = routeSeries(daily, route);
-  const prev = series.filter(([d]) => d < (series.at(-1)?.[0] ?? "")).at(-1);
-  return prev ? { move: price - prev[1], sinceDay: prev[0] } : null;
+  const last = series.at(-1);
+  if (!last) return null;
+  const prev = series.filter(([d]) => d < last[0]).at(-1);
+  return prev ? { move: last[1] - prev[1], sinceDay: prev[0] } : null;
 }
 
 /* ------------------------------------------------------------------ *
@@ -217,7 +221,7 @@ function primaryCard(latest, daily) {
     if (isLatam(o.validating)) tags.prepend(latamBadge());
     card.append(tags);
 
-    const mv = routeMove(daily, route, o.priceAud2pax);
+    const mv = routeMove(daily, route);
     if (mv) {
       card.append(h("p", { class: "rcard-move" },
         h("span", { class: mv.move <= 0 ? "d--good" : "d--bad" }, mv.move === 0 ? "no change" : delta(mv.move)),
@@ -800,7 +804,7 @@ function renderFreshness(latest) {
 
   $("meta-updated").textContent = fmtStamp(latest.updatedAt);
   $("meta-updated-note").textContent = critical
-    ? `${rel}. Twice-daily runs are due morning and evening Brisbane time — check the Actions tab.`
+    ? `${rel}. Runs are due morning, afternoon and evening Brisbane time — check the Actions tab.`
     : `${rel} · sweep cursor at ${latest.sweepCursor ?? 0}`;
 }
 

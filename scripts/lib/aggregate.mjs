@@ -25,7 +25,11 @@ function normalizeRow(r, watchedRoutes) {
   }
   // `idealRoute` is the fallback for its own slot, never an override: it was gated to
   // all-LATAM options, so it can only ever be the dearer quote on the very same path.
-  if (r.idealRoute) routes[LEGACY_IDEAL_ROUTE_ID] ??= r.idealRoute;
+  // Only apply it when that slot is actually configured — otherwise a de-configured
+  // route would grow a `routes.viaSyd` key that latest.json/daily.json never intend.
+  if (r.idealRoute && watchedRoutes.some((route) => route.id === LEGACY_IDEAL_ROUTE_ID)) {
+    routes[LEGACY_IDEAL_ROUTE_ID] ??= r.idealRoute;
+  }
   return { ...r, routes };
 }
 
