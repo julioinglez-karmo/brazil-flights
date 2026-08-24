@@ -225,3 +225,100 @@ reports durations as integer minutes, so the ISO-8601 parser had no caller.
 **Setup change.** Step 1 of the original setup is now: create a free SerpAPI
 account (serpapi.com, no credit card) and provide the private API key as the
 `SERPAPI_API_KEY` repository secret.
+
+## Amendment 2026-08-24: Route-watch redesign
+
+**Status:** Approved by the user, implemented on the `route-watch` branch.
+
+**São Paulo is dropped.** `destinations` becomes `["CWB"]`. Only single-ticket
+BNE→CWB itineraries are searched, aggregated and displayed. `history.jsonl` is
+append-only and keeps every GRU row ever written; nothing reads them again.
+`daily.json` now filters to the tracked destinations, because it is a derived
+view of what is tracked today rather than an archive — without that the
+dashboard would keep offering a GRU control built from its keys.
+
+**Watched routes replace the single ideal route.** `idealRoutePath` is gone. In
+its place `config.watchedRoutes` is a list of `{id, label, role, path}`:
+
+| id | label | role | path |
+|---|---|---|---|
+| `viaMel` | via Melbourne | `primary` | BNE → MEL → SCL → CWB |
+| `viaSyd` | via Sydney | `watch` | BNE → SYD → SCL → CWB |
+
+The primary route is the headline figure on the dashboard and in the digest.
+The watch route is not currently sold by any airline; it renders an explicit
+"Watching — not currently offered" state, carries the last price seen if there
+ever was one, and lights up the moment it returns. Adding a third route needs
+only a config entry and the mirrored entry in `assets/app.js`.
+
+**Path, not carrier — the central decision.** A watched route matches on exact
+outbound path equality and nothing else. The old ideal-route card additionally
+required an all-LATAM itinerary, and that rule was quietly wrong for the real
+market: the via-MEL and via-SYD itineraries that actually exist are
+Qantas-marketed with LATAM long-haul legs, so a carrier gate would have blanked
+the primary card for a route that is genuinely on sale every day. The card
+reports the carriers instead of filtering on them, which is the honest
+presentation given Google publishes no validating carrier. `cheapestLatam`
+keeps its all-LATAM rule untouched — "cheapest fare on this exact path" and
+"cheapest all-LATAM fare" are different questions and both are worth an answer.
+
+**Data model.** `extractSerpSearch` returns `{cheapest, cheapestLatam, routes}`,
+where `routes` maps each watched-route id to an `OfferSummary` or null, and a
+route is evaluated only when the search destination is the route's last node.
+History rows carry that `routes` object in place of `idealRoute`. In
+`latest.json` the `idealRoute` key becomes:
+
+```
+routes: { [id]: { label, role, current, currentTs, lastSeen } }
+```
+
+`current` is the newest non-error pinned-pair record's offer for that route —
+null means "searched, not offered", which is the state the via-SYD card exists
+to show. `lastSeen` is the newest sighting anywhere, across any date pair.
+Everything else in `latest.json` keeps its shape.
+
+**Legacy rows.** `aggregate.mjs` normalizes at read time. A row with an
+`idealRoute` field and no `routes` maps that field onto `viaSyd`, since the old
+ideal path *was* the via-Sydney one. Beyond that, a legacy row whose recorded
+`cheapest` offer lies exactly on a watched path fills that route's slot with
+that offer: a global minimum that lies on a path is also that path's minimum,
+so this recovers recorded fact rather than estimating. That mattered in
+practice — all 64 committed rows have `idealRoute: null`, but three of them
+recorded a cheapest offer on the via-MEL path, which is what lets the
+regenerated `latest.json` show the primary route at A$5,687 instead of blank.
+The `idealRoute` value is a fallback for its own slot and never an override,
+because the all-LATAM price can only ever be the dearer quote on the same path.
+
+**Per-route trend series.** `deriveDaily` gains
+`routeDaily: {[routeId]: {[day]: minPrice}}`, computed over the pinned pair only
+so the line stays comparable with the pinned-cheapest line beside it. The
+dashboard uses it for the via-MEL chart line and for the primary card's
+movement figure, neither of which `latest.json` alone could support.
+
+**Budget reinvestment.** Dates and target are unchanged. The pinned check goes
+from twice to three times daily (`0 4,10,22`, i.e. 14:00 / 20:00 / 08:00
+Brisbane); with one destination that is 3 calls a day against the old 4. The
+sweep grid densifies from step 4 to step 2 over Feb 1–27 at trip lengths
+{30, 37, 45}, filtered by the ≤2027-03-31 return rule, which reduces to
+L ≤ 59 − D and yields **32 units** (7 departures × 3 + 4 × 2 + 3 × 1). At 4
+sweeps a day the grid recycles about every 8 days. `dailyCallBudget` stays 4
+and `monthlyCallBudget` stays 235.
+
+**Presentation.** The dashboard hero is the gold primary-route panel beside the
+cheapest-on-pinned-dates card; a route-watch section states each path's
+position; the trend chart adds an amber via-MEL line (blue/amber validated for
+CVD separation and 3:1 contrast on both surfaces) drawn on top, because it
+frequently coincides with the cheapest line. The heatmap loses its destination
+switcher. The digest mirrors all of it, subject
+`✈ BNE→CWB · via MEL A$5,687 · cheapest A$4,898`.
+
+**Operational.** Both digest steps in `sweep.yml` are `continue-on-error`: the
+SMTP credentials are broken and a failed send was marking the nightly data run
+red. `email.yml` stays strict so a manual send still surfaces the real error.
+
+**Data regeneration.** `data/latest.json` and `data/daily.json` were rebuilt
+from `history.jsonl` with the new config and aggregation code, timestamped at
+the newest history row rather than the wall clock so `updatedAt` keeps naming
+the last real search. The stored sweep cursor was folded into the new grid
+length (32 → 0). No old-shape tolerance was therefore needed in the dashboard
+or the digest; the only compatibility code is the row-level shim above.
