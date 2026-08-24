@@ -43,13 +43,13 @@ const C = {
   goodInk: "#006300",    //  7.54:1 on surface, 6.59:1 on the wash
   badInk: "#b8302f",     //  6.00:1 on surface
   goodWash: "#e4f4e4",
-  series: ["#2568d2", "#c2489b"], // entity accents, one hue per destination
+  accent: "#2568d2",     // the cheapest-fare entity, matching --series-1 on the dashboard
 };
 
 const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Helvetica Neue',Arial,sans-serif";
 const MONO = "ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace";
 
-const CITY = { CWB: "Curitiba", GRU: "São Paulo", BNE: "Brisbane", SYD: "Sydney", SCL: "Santiago" };
+const CITY = { CWB: "Curitiba", BNE: "Brisbane", MEL: "Melbourne", SYD: "Sydney", SCL: "Santiago" };
 const DASHBOARD_URL = "https://julioinglez-karmo.github.io/brazil-flights/";
 const EM = "—";
 
@@ -131,20 +131,44 @@ function pinnedDates(config, latest, dest) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Watched routes — config owns the paths, latest.json owns the prices
+ * ------------------------------------------------------------------ */
+
+const watchedRoutes = (config) => config?.watchedRoutes ?? [];
+const primaryRoute = (config) => watchedRoutes(config).find((r) => r.role === "primary") ?? watchedRoutes(config)[0] ?? null;
+const secondaryRoutes = (config) => watchedRoutes(config).filter((r) => r !== primaryRoute(config));
+
+/** The route's slot in latest.json, or an empty slot when it has never been written. */
+const routeState = (latest, route) =>
+  (route && latest?.routes?.[route.id]) || { label: route?.label ?? "", role: route?.role ?? "watch", current: null, currentTs: null, lastSeen: null };
+
+// "via MEL" — the first hub, which is the one that tells the watched routes apart
+// (they share SCL) and the one each route's label is named for.
+const viaShort = (route) => `via ${route.path[1] ?? route.path.at(-1)}`;
+
+/** The one destination this digest is about. */
+const destOf = (config) => primaryRoute(config)?.path.at(-1) ?? config?.destinations?.[0] ?? "CWB";
+
+const priceOf = (offer) => (isNum(offer?.priceAud2pax) ? offer.priceAud2pax : null);
+
+/* ------------------------------------------------------------------ *
  * Subject
  * ------------------------------------------------------------------ */
 
 export function buildSubject({ config, latest }) {
-  const dests = config?.destinations ?? [];
-  const parts = dests.map((dest) => {
-    const price = pinnedPrice(latest, dest);
-    if (price == null) return `${dest} ${EM}`;
-    const move = latest?.deltas?.[dest]?.vsYesterdayAud;
-    if (!isNum(move)) return `${dest} ${aud(price)}`;
-    // A flat day reads as a zero drop rather than a rise.
-    return `${dest} ${aud(price)} ${move <= 0 ? "▼" : "▲"}${group(Math.abs(move))}`;
-  });
-  return `✈ ${config?.origin ?? "BNE"}→Brazil${parts.length ? " · " + parts.join(" · ") : ""}`;
+  const dest = destOf(config);
+  const route = primaryRoute(config);
+  const primary = priceOf(routeState(latest, route).current);
+  const best = latest?.bestInWindow?.[dest]?.priceAud2pax;
+
+  // The primary route's own price leads; "cheapest" is the best fare anywhere in the
+  // date window, which is the number worth acting on when the route you want is dear.
+  const lead = route
+    ? `${viaShort(route)} ${primary != null ? aud(primary) : routeState(latest, route).currentTs ? "not offered" : EM}`
+    : null;
+
+  const parts = [lead, `cheapest ${isNum(best) ? aud(best) : EM}`].filter(Boolean);
+  return `✈ ${config?.origin ?? "BNE"}→${dest} · ${parts.join(" · ")}`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -179,8 +203,8 @@ function button(href, label, { bg, fg, border }) {
  * ------------------------------------------------------------------ */
 
 function masthead(config, now) {
-  const dests = (config?.destinations ?? []).map((d) => CITY[d] ?? d).join(" & ");
-  const trip = `${CITY[config?.origin] ?? config?.origin ?? "Brisbane"} → ${dests} · ${config?.adults ?? 2} travellers`;
+  const dest = destOf(config);
+  const trip = `${CITY[config?.origin] ?? config?.origin ?? "Brisbane"} → ${CITY[dest] ?? dest} · ${config?.adults ?? 2} travellers`;
   return `<tr><td bgcolor="${C.panel}" style="background-color:${C.panel};padding:26px 26px 22px 26px;border-radius:12px 12px 0 0;">
   ${p(`font:600 13px/1 ${MONO};letter-spacing:.26em;color:${C.onPanel};`,
       `<span style="color:${C.gold};letter-spacing:0;">✈</span>&nbsp;&nbsp;SOUTHBOUND`)}
@@ -191,7 +215,7 @@ ${rule(C.gold, 3)}`;
 }
 
 /* ------------------------------------------------------------------ *
- * Section: destination cards
+ * Section: the pinned-dates card
  *
  * The cards stack as rows of the outer table rather than sitting in
  * side-by-side cells: rows are the only construction that cannot be
@@ -215,12 +239,22 @@ function moveRow(label, n) {
   return metricRow(label, `${n < 0 ? "▼" : "▲"} ${aud(Math.abs(n))}`, n < 0 ? C.goodInk : C.badInk);
 }
 
-function destinationCard(config, latest, dest, slot) {
-  const accent = C.series[slot % C.series.length];
+/** "BNE → MEL → SCL → CWB", the plain-text routing of an offer. */
+const routeText = (offer) => (offer?.outRoute?.length ? offer.outRoute.join(" → ") : null);
+
+/** "QF · LA" — who actually flies it, now that the route is not carrier-gated. */
+const carrierText = (offer) => {
+  const list = offer?.carriers?.length ? offer.carriers : offer?.validating ? [offer.validating] : [];
+  return list.length ? list.join(" · ") : null;
+};
+
+function pinnedCard(config, latest, dest) {
+  const accent = C.accent;
   const price = pinnedPrice(latest, dest);
   const { depDate, retDate } = pinnedDates(config, latest, dest);
   const d = latest?.deltas?.[dest] ?? {};
   const low = latest?.allTimeLow?.[dest] ?? null;
+  const offer = latest?.pinned?.[dest]?.cheapest ?? null;
 
   const window = depDate && retDate
     ? `${config?.adults ?? 2} travellers, return · ${fmtDay(depDate)} → ${fmtDayYear(retDate)}`
@@ -228,11 +262,29 @@ function destinationCard(config, latest, dest, slot) {
 
   // A missing figure says so in words — an em dash at display size reads as a
   // stray rule. The tabular metrics beside it still carry the em-dash convention.
+  // When the cheapest fare IS the primary route's, the panel above has already shown
+  // the routing and the carriers at display size. Repeating them here would say the
+  // same thing three times, so the card names the coincidence and stops.
+  const primary = primaryRoute(config);
+  const isPrimaryOffer = primary != null && price != null &&
+    priceOf(routeState(latest, primary).current) === price &&
+    routeText(offer) === primary.path.join(" → ");
+
+  const routing = isPrimaryOffer
+    ? p(`margin-top:8px;font:400 12.5px/1.45 ${SANS};color:${C.ink3};`,
+        esc(`Nothing beats the ${primary.label} routing on these dates.`))
+    : routeText(offer)
+      ? p(`margin-top:8px;font:600 12px/1.4 ${MONO};letter-spacing:.06em;color:${C.ink3};`, esc(routeText(offer))) +
+        (carrierText(offer) ? p(`margin-top:4px;font:400 12.5px/1.4 ${SANS};color:${C.ink3};`, esc(carrierText(offer))) : "")
+      : "";
+
+  // 28px against the panel's 32px: the gold hero stays the loudest figure on the page.
   const figure = price == null
-    ? p(`margin-top:10px;font:700 28px/1 ${SANS};letter-spacing:-.02em;color:${C.ink3};`, "No fare") +
+    ? p(`margin-top:10px;font:700 26px/1 ${SANS};letter-spacing:-.02em;color:${C.ink3};`, "No fare") +
       p(`margin-top:10px;font:400 13px/1.45 ${SANS};color:${C.ink3};`, "Nothing came back for these dates in the latest search.")
-    : p(`margin-top:10px;font:700 36px/1 ${SANS};letter-spacing:-.025em;color:${C.ink};`, esc(aud(price))) +
-      p(`margin-top:10px;font:400 13px/1.45 ${SANS};color:${C.ink2};`, esc(window));
+    : p(`margin-top:10px;font:700 28px/1 ${SANS};letter-spacing:-.022em;color:${C.ink};`, esc(aud(price))) +
+      p(`margin-top:10px;font:400 13px/1.45 ${SANS};color:${C.ink2};`, esc(window)) +
+      routing;
 
   const lowRows = low && isNum(low.priceAud2pax)
     ? metricRow("All-time low", esc(aud(low.priceAud2pax)), C.ink) +
@@ -247,7 +299,8 @@ function destinationCard(config, latest, dest, slot) {
         <table ${TABLE} width="100%" style="width:100%;">
           <tr>
             <td width="55%" valign="top" style="width:55%;padding-right:10px;">
-              ${p(`font:600 12.5px/1.3 ${MONO};letter-spacing:.14em;color:${C.ink};`, esc(dest))}
+              ${eyebrow("Cheapest on the pinned dates", C.ink3)}
+              ${p(`margin-top:6px;font:600 12.5px/1.3 ${MONO};letter-spacing:.14em;color:${C.ink};`, esc(dest))}
               ${p(`margin-top:4px;font:400 13.5px/1.3 ${SANS};color:${C.ink3};`, esc(CITY[dest] ?? dest))}
               ${figure}
             </td>
@@ -268,7 +321,7 @@ function destinationCard(config, latest, dest, slot) {
 }
 
 /* ------------------------------------------------------------------ *
- * Section: the gold ideal-route strip — the one inverted panel.
+ * Section: the gold primary-route panel — the one inverted panel.
  * The route diagram is built from table cells and a hairline cell, so
  * it renders identically with images blocked. It is the signature.
  * ------------------------------------------------------------------ */
@@ -291,28 +344,33 @@ function routeStrip(path) {
   return `<table ${TABLE} style="border-collapse:separate;"><tr>${cells.join("")}</tr></table>`;
 }
 
-function idealStrip(config, latest) {
-  const path = config?.idealRoutePath ?? ["BNE", "SYD", "SCL", "CWB"];
-  const ir = latest?.idealRoute ?? {};
-  const via = path.slice(1, -1).map((code) => CITY[code] ?? code).join(" and ");
-  const dest = path.at(-1);
+/** "Last seen 9 Aug 2026 for 6 Feb → 14 Mar 2027." — or nothing, if never. */
+function lastSeenLine(lastSeen) {
+  const price = priceOf(lastSeen?.offer);
+  if (price == null) return null;
+  const dates = lastSeen.depDate && lastSeen.retDate ? ` for ${fmtDay(lastSeen.depDate)} → ${fmtDayYear(lastSeen.retDate)}` : "";
+  return `Last seen ${stampDay(lastSeen.ts)}${dates} at ${aud(price)}.`;
+}
+
+function primaryPanel(config, latest) {
+  const route = primaryRoute(config);
+  if (!route) return "";
+  const state = routeState(latest, route);
+  const via = route.path.slice(1, -1).map((code) => CITY[code] ?? code).join(" and ");
+  const price = priceOf(state.current);
 
   let figure;
-  if (ir.latest && isNum(ir.latest.priceAud2pax)) {
-    figure = p(`font:700 32px/1 ${SANS};letter-spacing:-.025em;color:${C.gold};`, esc(aud(ir.latest.priceAud2pax))) +
+  if (price != null) {
+    const carriers = carrierText(state.current);
+    figure = p(`font:700 32px/1 ${SANS};letter-spacing:-.025em;color:${C.gold};`, esc(aud(price))) +
+      (carriers ? p(`margin-top:10px;font:600 12.5px/1.4 ${MONO};letter-spacing:.1em;color:${C.onPanel};`, esc(carriers)) : "") +
       p(`margin-top:8px;font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
-        esc(ir.latestTs ? `On the board in the search at ${stamp(ir.latestTs)}.` : "On the board in the latest search."));
-  } else if (ir.lastSeen?.offer && isNum(ir.lastSeen.offer.priceAud2pax)) {
-    const s = ir.lastSeen;
-    const dates = s.depDate && s.retDate ? ` for ${fmtDay(s.depDate)} → ${fmtDayYear(s.retDate)}` : "";
-    figure = p(`font:400 15px/1.4 ${SANS};color:${C.onPanel};`, "Not seen in the latest search") +
-      p(`margin-top:10px;font:700 24px/1 ${SANS};letter-spacing:-.02em;color:${C.gold};`, esc(aud(s.offer.priceAud2pax))) +
-      p(`margin-top:8px;font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
-        esc(`Last seen ${stampDay(s.ts)}${dates}.`));
+        esc(state.currentTs ? `On the board in the search at ${stamp(state.currentTs)}.` : "On the board in the latest search."));
   } else {
-    figure = p(`font:400 15px/1.4 ${SANS};color:${C.onPanel};`, "Not seen in the latest search") +
+    const seen = lastSeenLine(state.lastSeen);
+    figure = p(`font:400 15px/1.4 ${SANS};color:${C.onPanel};`, "Not currently offered — watching") +
       p(`margin-top:8px;font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
-        "No LATAM fare has come back on this exact path yet. The cheaper routings above still stand.");
+        esc(seen ?? "No airline has sold this exact path since tracking began. The fares above still stand."));
   }
 
   // Stacked as table rows with cell padding rather than divs with margins:
@@ -321,12 +379,51 @@ function idealStrip(config, latest) {
   <table ${TABLE} width="100%" style="width:100%;">
     <tr><td bgcolor="${C.panel}" style="background-color:${C.panel};border-radius:12px;padding:22px 20px;">
       <table ${TABLE} width="100%" style="width:100%;">
-        <tr><td>${eyebrow("The route you want", C.gold)}</td></tr>
-        <tr><td style="padding-top:14px;">${routeStrip(path)}</td></tr>
+        <tr><td>${eyebrow(`The route you want · ${state.label || route.label}`, C.gold)}</td></tr>
+        <tr><td style="padding-top:14px;">${routeStrip(route.path)}</td></tr>
         <tr><td style="padding-top:14px;">${p(`font:400 13px/1.45 ${SANS};color:${C.onPanel2};`,
-            esc(`${CITY[path[0]] ?? path[0]} → ${CITY[dest] ?? dest} on LATAM metal, via ${via}.`))}</td></tr>
+            esc(`${CITY[route.path[0]] ?? route.path[0]} → ${CITY[route.path.at(-1)] ?? route.path.at(-1)}, via ${via}.`))}</td></tr>
         <tr><td style="padding-top:16px;">${figure}</td></tr>
       </table>
+    </td></tr>
+  </table>
+</td></tr>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section: the other watched routes — one line each, live or dark
+ * ------------------------------------------------------------------ */
+
+function watchSection(config, latest) {
+  const routes = secondaryRoutes(config);
+  if (!routes.length) return "";
+
+  const rows = routes.map((route, i) => {
+    const state = routeState(latest, route);
+    const price = priceOf(state.current);
+    const top = i ? `border-top:1px solid ${C.hair};` : "";
+    const note = price != null
+      ? `${carrierText(state.current) ?? route.path.join(" → ")}`
+      : lastSeenLine(state.lastSeen) ?? "No sighting on record";
+    return `<tr>
+      <td valign="top" style="${top}padding:11px 10px 11px 0;">
+        ${p(`font:600 13.5px/1.35 ${SANS};color:${C.ink};`, esc(state.label || route.label))}
+        ${p(`margin-top:3px;font:600 11.5px/1.4 ${MONO};letter-spacing:.08em;color:${C.ink3};`, esc(route.path.join(" → ")))}
+      </td>
+      <td align="right" valign="top" style="${top}padding:11px 0;">
+        ${price != null
+          ? p(`font:600 15px/1.35 ${MONO};color:${C.ink};`, esc(aud(price)))
+          : p(`font:400 12.5px/1.35 ${SANS};color:${C.ink3};white-space:nowrap;`, "Not currently offered")}
+        ${p(`margin-top:3px;font:400 12px/1.4 ${SANS};color:${C.ink3};`, esc(note))}
+      </td>
+    </tr>`;
+  }).join("");
+
+  return `<tr><td style="padding:0 0 12px 0;">
+  <table ${TABLE} width="100%" style="width:100%;">
+    <tr><td bgcolor="${C.surface}" style="background-color:${C.surface};border:1px solid ${C.hair};border-radius:12px;padding:18px 20px;">
+      ${eyebrow("Also watching", C.ink3)}
+      <table ${TABLE} width="100%" style="width:100%;margin-top:8px;">${rows}</table>
     </td></tr>
   </table>
 </td></tr>`;
@@ -340,7 +437,9 @@ function windowSection(config, latest) {
   const rows = (config?.destinations ?? []).map((dest, i) => {
     const b = latest?.bestInWindow?.[dest] ?? null;
     const has = b && isNum(b.priceAud2pax);
-    const dates = has && b.depDate && b.retDate ? `${fmtDay(b.depDate)} → ${fmtDayYear(b.retDate)}` : "Nothing swept yet";
+    const dates = has && b.depDate && b.retDate
+      ? `${fmtDay(b.depDate)} → ${fmtDayYear(b.retDate)}${isNum(b.tripDays) ? ` · ${b.tripDays} days` : ""}`
+      : "Nothing swept yet";
     const top = i ? `border-top:1px solid ${C.hair};` : "";
     return `<tr>
       <td valign="middle" style="${top}padding:11px 8px 11px 0;font:600 12.5px/1.3 ${MONO};letter-spacing:.13em;color:${C.ink};white-space:nowrap;">${esc(dest)}</td>
@@ -457,9 +556,9 @@ export function renderEmail({ config, latest, now }) {
   const a = data.alert ?? {};
   const preheader = a.active && isNum(a.priceAud2pax)
     ? `Under target at ${aud(a.priceAud2pax)} for two.`
-    : `${longDate(now)} · the pinned fares, the flexible best and the route you want.`;
+    : `${longDate(now)} · the route you want, the pinned fare and the cheapest dates in the window.`;
 
-  const cards = (cfg.destinations ?? []).map((dest, i) => destinationCard(cfg, data, dest, i)).join("\n");
+  const cards = (cfg.destinations ?? []).map((dest) => pinnedCard(cfg, data, dest)).join("\n");
 
   const html = `<!doctype html>
 <html lang="en-AU">
@@ -477,8 +576,9 @@ export function renderEmail({ config, latest, now }) {
     <table ${TABLE} width="600" style="width:600px;max-width:600px;">
       ${masthead(cfg, now)}
       ${gap(16)}
+      ${primaryPanel(cfg, data)}
       ${cards}
-      ${idealStrip(cfg, data)}
+      ${watchSection(cfg, data)}
       ${windowSection(cfg, data)}
       ${targetSection(cfg, data)}
       ${footer(cfg, data)}

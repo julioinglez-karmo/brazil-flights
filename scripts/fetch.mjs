@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { sweepGrid, nextSweepBatch, daysBetween } from "./lib/dates.mjs";
 import { normalizeBudget, remainingCalls, recordCalls } from "./lib/budget.mjs";
-import { extractSerpSearch } from "./lib/extract.mjs";
-import { deriveDaily, deriveLatest } from "./lib/aggregate.mjs";
+import { extractSerpSearch, nullRoutes } from "./lib/extract.mjs";
+import { deriveDaily, deriveLatest, pinnedKeysOf } from "./lib/aggregate.mjs";
 import { SerpApiClient } from "./lib/serpapi.mjs";
 
 function readHistory(path) {
@@ -50,17 +50,19 @@ export async function runFetch({ mode, dataDir, configPath, client, now }) {
         origin: config.origin, dest: u.dest, depDate: u.depDate, retDate: u.retDate,
         adults: config.adults, currency: config.currency,
       });
-      const ex = extractSerpSearch(body, { latamCarriers: config.latamCarriers, idealRoutePath: config.idealRoutePath, dest: u.dest });
+      const ex = extractSerpSearch(body, { latamCarriers: config.latamCarriers, watchedRoutes: config.watchedRoutes, dest: u.dest });
       records.push({ ...base, status: ex.cheapest ? "ok" : "empty", ...ex });
     } catch (err) {
-      records.push({ ...base, status: "error", cheapest: null, cheapestLatam: null, idealRoute: null, error: String(err.message ?? err) });
+      records.push({ ...base, status: "error", cheapest: null, cheapestLatam: null, routes: nullRoutes(config.watchedRoutes), error: String(err.message ?? err) });
     }
   }
   budget = recordCalls(budget, units.length);
 
   for (const r of records) appendFileSync(historyPath, JSON.stringify(r) + "\n");
   const history = readHistory(historyPath);
-  const daily = deriveDaily(history, now);
+  const daily = deriveDaily(history, now, {
+    dests: config.destinations, pinnedKeys: pinnedKeysOf(config), watchedRoutes: config.watchedRoutes,
+  });
   const latest = deriveLatest(history, { config, budget, sweepCursor, now });
 
   // Validate round-trip before publishing; a throw here leaves history intact and aborts the commit.

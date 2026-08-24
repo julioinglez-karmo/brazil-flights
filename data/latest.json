@@ -1,6 +1,6 @@
 {
  "updatedAt": "2026-08-23T22:16:31.190Z",
- "sweepCursor": 32,
+ "sweepCursor": 0,
  "budget": {
   "month": "2026-08",
   "callsUsed": 62,
@@ -29,13 +29,20 @@
     "outDurationMin": 2005
    },
    "cheapestLatam": null
-  },
-  "GRU": {
-   "ts": "2026-08-23T22:16:31.190Z",
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14",
-   "cheapest": {
-    "priceAud2pax": 5336,
+  }
+ },
+ "deltas": {
+  "CWB": {
+   "vsYesterdayAud": 40,
+   "vs7dAud": null
+  }
+ },
+ "routes": {
+  "viaMel": {
+   "label": "via Melbourne",
+   "role": "primary",
+   "current": {
+    "priceAud2pax": 5687,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -45,29 +52,43 @@
      "BNE",
      "MEL",
      "SCL",
-     "GRU"
+     "CWB"
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 1450
+    "outDurationMin": 2005
    },
-   "cheapestLatam": null
-  }
- },
- "deltas": {
-  "CWB": {
-   "vsYesterdayAud": 40,
-   "vs7dAud": null
+   "currentTs": "2026-08-23T22:16:31.190Z",
+   "lastSeen": {
+    "offer": {
+     "priceAud2pax": 5687,
+     "validating": "QF",
+     "carriers": [
+      "QF",
+      "LA"
+     ],
+     "outRoute": [
+      "BNE",
+      "MEL",
+      "SCL",
+      "CWB"
+     ],
+     "backRoute": [],
+     "outStops": 2,
+     "outDurationMin": 2005
+    },
+    "ts": "2026-08-23T22:16:31.190Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
+   }
   },
-  "GRU": {
-   "vsYesterdayAud": 1517,
-   "vs7dAud": null
+  "viaSyd": {
+   "label": "via Sydney",
+   "role": "watch",
+   "current": null,
+   "currentTs": "2026-08-23T22:16:31.190Z",
+   "lastSeen": null
   }
- },
- "idealRoute": {
-  "latest": null,
-  "latestTs": "2026-08-23T22:16:31.190Z",
-  "lastSeen": null
  },
  "bestInWindow": {
   "CWB": {
@@ -76,13 +97,6 @@
    "retDate": "2027-03-22",
    "tripDays": 45,
    "ts": "2026-08-17T13:58:21.362Z"
-  },
-  "GRU": {
-   "priceAud2pax": 3819,
-   "depDate": "2027-02-05",
-   "retDate": "2027-03-07",
-   "tripDays": 30,
-   "ts": "2026-08-21T14:04:19.746Z"
   }
  },
  "allTimeLow": {
@@ -91,12 +105,6 @@
    "ts": "2026-08-17T13:58:21.362Z",
    "depDate": "2027-02-05",
    "retDate": "2027-03-22"
-  },
-  "GRU": {
-   "priceAud2pax": 3819,
-   "ts": "2026-08-21T14:04:19.746Z",
-   "depDate": "2027-02-05",
-   "retDate": "2027-03-07"
   }
  },
  "alert": {

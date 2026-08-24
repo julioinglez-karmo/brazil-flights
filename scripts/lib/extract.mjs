@@ -44,15 +44,29 @@ export function serpOfferSummary(option) {
   };
 }
 
-export function extractSerpSearch(body, { latamCarriers, idealRoutePath, dest }) {
+const samePath = (a, b) => a.length === b.length && a.every((code, i) => code === b[i]);
+
+/** The all-null slot map: every watched route id, nothing found. */
+export function nullRoutes(watchedRoutes) {
+  return Object.fromEntries((watchedRoutes ?? []).map((r) => [r.id, null]));
+}
+
+export function extractSerpSearch(body, { latamCarriers, watchedRoutes, dest }) {
   const pool = [...(body?.best_flights ?? []), ...(body?.other_flights ?? [])];
   const all = pool.map(serpOfferSummary);
   const latam = pool.filter((o) => isLatamOption(o, latamCarriers)).map(serpOfferSummary);
-  const ideal =
-    dest === idealRoutePath.at(-1)
-      ? // Ideal-route options must be all-LATAM; non-LATAM options on the same path count only
-        // toward cheapest overall.
-        latam.filter((s) => JSON.stringify(s.outRoute) === JSON.stringify(idealRoutePath))
-      : [];
-  return { cheapest: cheapestOf(all), cheapestLatam: cheapestOf(latam), idealRoute: cheapestOf(ideal) };
+
+  // A watched route is matched on the outbound path alone. It is deliberately NOT
+  // carrier-gated: the real via-MEL and via-SYD itineraries are Qantas-marketed with
+  // LATAM long-haul legs, so requiring an all-LATAM option would blank the card for a
+  // route that is genuinely on sale. The carriers are shown on the card instead.
+  // `cheapestLatam` keeps the all-LATAM rule; the two answer different questions.
+  const routes = {};
+  for (const route of watchedRoutes ?? []) {
+    routes[route.id] = dest === route.path.at(-1)
+      ? cheapestOf(all.filter((s) => samePath(s.outRoute, route.path)))
+      : null;
+  }
+
+  return { cheapest: cheapestOf(all), cheapestLatam: cheapestOf(latam), routes };
 }

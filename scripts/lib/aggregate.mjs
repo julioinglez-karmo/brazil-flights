@@ -5,20 +5,71 @@ export function pairKey(r) {
 const day = (ts) => ts.slice(0, 10);
 const byTsAsc = (a, b) => (a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : 0);
 
-export function deriveDaily(records, now) {
+// The id of the route the pre-redesign `idealRoute` field described. Rows written
+// before 2026-08-24 carry a single `idealRoute` on the BNE→SYD→SCL→CWB path, which
+// is exactly today's viaSyd watch. history.jsonl is append-only, so the shim is
+// permanent: it is the only place old rows are taught the new vocabulary.
+const LEGACY_IDEAL_ROUTE_ID = "viaSyd";
+
+const samePath = (a, b) => a.length === b.length && a.every((code, i) => code === b[i]);
+
+function normalizeRow(r, watchedRoutes) {
+  if (r.routes) return r;
+  const routes = {};
+  for (const route of watchedRoutes) {
+    // A legacy row recorded its cheapest offer's full outbound path. When that path IS a
+    // watched path, that offer is provably also the cheapest ON the path — a global
+    // minimum lying on the path is the path's minimum — so the slot is recovered exactly,
+    // not estimated. Off-path, the row simply never measured the route: null means unknown.
+    routes[route.id] = samePath(r.cheapest?.outRoute ?? [], route.path) ? r.cheapest : null;
+  }
+  // `idealRoute` is the fallback for its own slot, never an override: it was gated to
+  // all-LATAM options, so it can only ever be the dearer quote on the very same path.
+  if (r.idealRoute) routes[LEGACY_IDEAL_ROUTE_ID] ??= r.idealRoute;
+  return { ...r, routes };
+}
+
+/** `dest|depDate|retDate` for each tracked destination on the pinned dates. */
+export function pinnedKeysOf(config) {
+  const { depDate, retDate } = config.pinned;
+  return config.destinations.map((dest) => `${dest}|${depDate}|${retDate}`);
+}
+
+/**
+ * @param {object[]} records raw history rows, legacy or current
+ * @param {Date} now
+ * @param {{dests?: string[], pinnedKeys?: string[], watchedRoutes?: object[]}} [opts]
+ *   `dests` limits the file to the destinations still tracked — history keeps dropped
+ *   ones forever, daily.json is a view of the present. `pinnedKeys` restricts
+ *   `routeDaily` to those pairs, so the per-route series stays comparable with the
+ *   pinned-cheapest line on the chart; `watchedRoutes` lets legacy rows be normalized.
+ */
+export function deriveDaily(records, now, { dests = null, pinnedKeys = null, watchedRoutes = [] } = {}) {
   const pairs = {};
   const bestPerDay = {};
-  for (const r of records) {
+  const routeDaily = {};
+  for (const raw of records) {
+    if (dests !== null && !dests.includes(raw.dest)) continue;
+    const r = normalizeRow(raw, watchedRoutes);
+    const d = day(r.ts);
+
+    if (r.status !== "error" && (pinnedKeys === null || pinnedKeys.includes(pairKey(r)))) {
+      for (const [id, offer] of Object.entries(r.routes)) {
+        if (!Number.isFinite(offer?.priceAud2pax)) continue;
+        routeDaily[id] ??= {};
+        routeDaily[id][d] = Math.min(routeDaily[id][d] ?? Infinity, offer.priceAud2pax);
+      }
+    }
+
     if (r.status !== "ok" || !r.cheapest) continue;
     const k = pairKey(r);
-    const d = day(r.ts);
     const p = r.cheapest.priceAud2pax;
     pairs[k] ??= {};
     pairs[k][d] = Math.min(pairs[k][d] ?? Infinity, p);
     bestPerDay[r.dest] ??= {};
     bestPerDay[r.dest][d] = Math.min(bestPerDay[r.dest][d] ?? Infinity, p);
   }
-  return { generatedAt: now.toISOString(), pairs, bestPerDay };
+  return { generatedAt: now.toISOString(), pairs, bestPerDay, routeDaily };
 }
 
 function daysAgo(now, n) {
@@ -28,8 +79,9 @@ function daysAgo(now, n) {
 }
 
 export function deriveLatest(records, { config, budget, sweepCursor, now }) {
-  const sorted = [...records].sort(byTsAsc);
-  const daily = deriveDaily(records, now);
+  const watchedRoutes = config.watchedRoutes ?? [];
+  const sorted = records.map((r) => normalizeRow(r, watchedRoutes)).sort(byTsAsc);
+  const daily = deriveDaily(records, now, { dests: config.destinations, watchedRoutes });
   const { depDate, retDate } = config.pinned;
 
   const pinned = {};
@@ -48,13 +100,25 @@ export function deriveLatest(records, { config, budget, sweepCursor, now }) {
     deltas[dest] = { vsYesterdayAud: diff(1), vs7dAud: diff(7) };
   }
 
-  const cwbPinned = pinned[config.idealRoutePath.at(-1)];
-  const seen = sorted.filter((r) => r.idealRoute).at(-1);
-  const idealRoute = {
-    latest: cwbPinned ? sorted.filter((r) => pairKey(r) === `${config.idealRoutePath.at(-1)}|${depDate}|${retDate}` && r.status !== "error").at(-1)?.idealRoute ?? null : null,
-    latestTs: cwbPinned?.ts ?? null,
-    lastSeen: seen ? { offer: seen.idealRoute, ts: seen.ts, depDate: seen.depDate, retDate: seen.retDate } : null,
-  };
+  // One slot per watched route. `current` is what the newest completed search on that
+  // route's pinned pair returned — null means "searched, not offered", which is the
+  // whole point of the via-SYD watch. `lastSeen` reaches across every pair and every
+  // day, so a route that vanishes still shows what it last cost.
+  const routes = {};
+  for (const route of watchedRoutes) {
+    const key = `${route.path.at(-1)}|${depDate}|${retDate}`;
+    const cur = sorted.filter((r) => pairKey(r) === key && r.status !== "error").at(-1);
+    const seen = sorted.filter((r) => r.routes[route.id]).at(-1);
+    routes[route.id] = {
+      label: route.label,
+      role: route.role,
+      current: cur?.routes[route.id] ?? null,
+      currentTs: cur?.ts ?? null,
+      lastSeen: seen
+        ? { offer: seen.routes[route.id], ts: seen.ts, depDate: seen.depDate, retDate: seen.retDate }
+        : null,
+    };
+  }
 
   const bestInWindow = {};
   const allTimeLow = {};
@@ -81,5 +145,5 @@ export function deriveLatest(records, { config, budget, sweepCursor, now }) {
     targetAud2pax: config.targetPriceAud2pax,
   };
 
-  return { updatedAt: now.toISOString(), sweepCursor, budget, pinned, deltas, idealRoute, bestInWindow, allTimeLow, alert };
+  return { updatedAt: now.toISOString(), sweepCursor, budget, pinned, deltas, routes, bestInWindow, allTimeLow, alert };
 }

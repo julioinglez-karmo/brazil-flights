@@ -20,20 +20,23 @@ function assertNoJunk({ subject, html }, where) {
   }
 }
 
-function offer(price, route) {
+const MEL = ["BNE", "MEL", "SCL", "CWB"];
+const SYD = ["BNE", "SYD", "SCL", "CWB"];
+
+function offer(price, route = MEL) {
   return {
     priceAud2pax: price,
-    validating: "LA",
-    carriers: ["LA"],
+    validating: "QF",
+    carriers: ["QF", "LA"],
     outRoute: route,
     backRoute: [],
     outStops: route.length - 2,
-    outDurationMin: 1905,
+    outDurationMin: 2005,
   };
 }
 
-// Every field populated: two pinned fares, both deltas, the ideal route on the
-// board, flexible-window bests, all-time lows, alert not yet met.
+// Every field populated: the pinned fare, both deltas, the primary route on the
+// board, the via-SYD watch dark, a flexible-window best, an all-time low, target unmet.
 function fullFixture() {
   return {
     updatedAt: "2026-08-17T10:13:51.826Z",
@@ -44,33 +47,24 @@ function fullFixture() {
         ts: "2026-08-17T10:13:51.826Z",
         depDate: "2027-02-06",
         retDate: "2027-03-14",
-        cheapest: offer(5644, ["BNE", "MEL", "SCL", "CWB"]),
-        cheapestLatam: null,
-      },
-      GRU: {
-        ts: "2026-08-17T10:13:51.826Z",
-        depDate: "2027-02-06",
-        retDate: "2027-03-14",
-        cheapest: offer(5099, ["BNE", "MEL", "SCL", "GRU"]),
+        cheapest: offer(5687),
         cheapestLatam: null,
       },
     },
-    deltas: {
-      CWB: { vsYesterdayAud: -120, vs7dAud: 40 },
-      GRU: { vsYesterdayAud: 85, vs7dAud: -260 },
-    },
-    idealRoute: {
-      latest: offer(5210, ["BNE", "SYD", "SCL", "CWB"]),
-      latestTs: "2026-08-17T10:13:51.826Z",
-      lastSeen: null,
+    deltas: { CWB: { vsYesterdayAud: -120, vs7dAud: 40 } },
+    routes: {
+      viaMel: {
+        label: "via Melbourne", role: "primary",
+        current: offer(5687), currentTs: "2026-08-17T10:13:51.826Z",
+        lastSeen: { offer: offer(5687), ts: "2026-08-17T10:13:51.826Z", depDate: "2027-02-06", retDate: "2027-03-14" },
+      },
+      viaSyd: { label: "via Sydney", role: "watch", current: null, currentTs: "2026-08-17T10:13:51.826Z", lastSeen: null },
     },
     bestInWindow: {
-      CWB: { priceAud2pax: 5320, depDate: "2027-02-09", retDate: "2027-03-18", tripDays: 37, ts: "2026-08-16T13:30:00.000Z" },
-      GRU: { priceAud2pax: 4980, depDate: "2027-02-01", retDate: "2027-03-03", tripDays: 30, ts: "2026-08-15T13:30:00.000Z" },
+      CWB: { priceAud2pax: 4898, depDate: "2027-02-05", retDate: "2027-03-22", tripDays: 45, ts: "2026-08-16T13:30:00.000Z" },
     },
     allTimeLow: {
-      CWB: { priceAud2pax: 5188, ts: "2026-08-10T10:13:00.000Z", depDate: "2027-02-06", retDate: "2027-03-14" },
-      GRU: { priceAud2pax: 4877, ts: "2026-08-12T22:05:00.000Z", depDate: "2027-02-06", retDate: "2027-03-14" },
+      CWB: { priceAud2pax: 4898, ts: "2026-08-10T10:13:00.000Z", depDate: "2027-02-05", retDate: "2027-03-22" },
     },
     alert: { active: false, priceAud2pax: null, targetAud2pax: 4500 },
   };
@@ -82,11 +76,12 @@ function sparseFixture() {
     updatedAt: "2026-08-17T10:13:51.826Z",
     sweepCursor: 0,
     budget: { month: "2026-08", callsUsed: 0, cap: 235 },
-    pinned: {},
-    deltas: {},
-    idealRoute: { latest: null, latestTs: null, lastSeen: null },
-    bestInWindow: {},
-    allTimeLow: {},
+    pinned: {}, deltas: {},
+    routes: {
+      viaMel: { label: "via Melbourne", role: "primary", current: null, currentTs: null, lastSeen: null },
+      viaSyd: { label: "via Sydney", role: "watch", current: null, currentTs: null, lastSeen: null },
+    },
+    bestInWindow: {}, allTimeLow: {},
     alert: { active: false, priceAud2pax: null, targetAud2pax: 4500 },
   };
 }
@@ -97,30 +92,30 @@ const NOW = new Date("2026-08-17T10:13:51.826Z");
  * Subject line
  * ---------------------------------------------------------------- */
 
-test("subject carries both prices with yesterday's move", () => {
+test("subject leads with the primary route, then the cheapest anywhere", () => {
   const out = renderEmail({ config, latest: fullFixture(), now: NOW });
-  assert.equal(out.subject, "✈ BNE→Brazil · CWB A$5,644 ▼120 · GRU A$5,099 ▲85");
+  assert.equal(out.subject, "✈ BNE→CWB · via MEL A$5,687 · cheapest A$4,898");
   assertNoJunk(out, "full");
 });
 
-test("subject omits the arrow when there is no yesterday to compare", () => {
+test("subject says so in words when the primary route is not on the board", () => {
   const latest = fullFixture();
-  latest.deltas.CWB.vsYesterdayAud = null;
+  latest.routes.viaMel.current = null;
   const out = renderEmail({ config, latest, now: NOW });
-  assert.equal(out.subject, "✈ BNE→Brazil · CWB A$5,644 · GRU A$5,099 ▲85");
+  assert.equal(out.subject, "✈ BNE→CWB · via MEL not offered · cheapest A$4,898");
+  assertNoJunk(out, "primary dark");
 });
 
-test("subject shows a flat day as a zero drop", () => {
-  const latest = fullFixture();
-  latest.deltas.CWB.vsYesterdayAud = 0;
-  const out = renderEmail({ config, latest, now: NOW });
-  assert.ok(out.subject.includes("CWB A$5,644 ▼0"), out.subject);
-});
-
-test("subject falls back to an em dash for a missing pinned price", () => {
+test("subject falls back to em dashes when nothing has been found yet", () => {
   const out = renderEmail({ config, latest: sparseFixture(), now: NOW });
-  assert.equal(out.subject, "✈ BNE→Brazil · CWB — · GRU —");
+  assert.equal(out.subject, "✈ BNE→CWB · via MEL — · cheapest —");
   assertNoJunk(out, "sparse");
+});
+
+test("subject never mentions a destination that is no longer tracked", () => {
+  const out = renderEmail({ config, latest: fullFixture(), now: NOW });
+  assert.ok(!out.subject.includes("GRU"), out.subject);
+  assert.ok(!out.subject.includes("Brazil"), "the tracker is BNE→CWB now, not BNE→Brazil");
 });
 
 /* ---------------------------------------------------------------- *
@@ -131,52 +126,94 @@ test("full digest renders every figure and every link", () => {
   const out = renderEmail({ config, latest: fullFixture(), now: NOW });
   const { html } = out;
 
-  // Pinned prices and the cities they belong to.
-  assert.ok(html.includes("A$5,644"), "CWB pinned price");
-  assert.ok(html.includes("A$5,099"), "GRU pinned price");
-  assert.ok(html.includes("Curitiba"), "CWB city");
-  assert.ok(html.includes("São Paulo"), "GRU city");
+  // The primary route panel.
+  assert.ok(html.includes("via Melbourne"), "primary route label");
+  assert.ok(html.includes("A$5,687"), "primary route price");
+  for (const node of MEL) assert.ok(html.includes(node), `route node ${node}`);
+  assert.ok(html.includes("QF · LA"), "the carriers are shown, since the route is not carrier-gated");
+
+  // Pinned dates and the city.
+  assert.ok(html.includes("Curitiba"), "destination city");
+  assert.ok(html.includes("6 Feb"), "pinned departure");
+  assert.ok(html.includes("14 Mar 2027"), "pinned return");
 
   // Deltas, directional glyphs included.
-  assert.ok(html.includes("▼ A$120"), "CWB down vs yesterday");
-  assert.ok(html.includes("▲ A$40"), "CWB up vs 7 days");
-  assert.ok(html.includes("▲ A$85"), "GRU up vs yesterday");
-  assert.ok(html.includes("▼ A$260"), "GRU down vs 7 days");
+  assert.ok(html.includes("▼ A$120"), "down vs yesterday");
+  assert.ok(html.includes("▲ A$40"), "up vs 7 days");
 
-  // All-time lows with their dates.
-  assert.ok(html.includes("A$5,188"), "CWB all-time low");
-  assert.ok(html.includes("A$4,877"), "GRU all-time low");
-  assert.ok(html.includes("10 Aug 2026"), "CWB all-time low date");
-  assert.ok(html.includes("13 Aug 2026"), "GRU all-time low date (Brisbane side of 12 Aug 22:05Z)");
+  // All-time low with its date.
+  assert.ok(html.includes("10 Aug 2026"), "all-time low date");
 
-  // Ideal route strip.
-  assert.ok(html.includes("A$5,210"), "ideal route price");
-  for (const node of ["BNE", "SYD", "SCL", "CWB"]) assert.ok(html.includes(node), `ideal node ${node}`);
-  assert.ok(!html.includes("Not seen in the latest search"), "ideal strip should not show the empty state");
+  // The via-SYD watch line.
+  assert.ok(html.includes("via Sydney"), "watch route label");
+  assert.ok(html.includes("Not currently offered"), "watch empty state");
 
   // Cheapest anywhere in the window.
-  assert.ok(html.includes("A$5,320"), "CWB best in window");
-  assert.ok(html.includes("A$4,980"), "GRU best in window");
-  assert.ok(html.includes("9 Feb"), "CWB window departure");
-  assert.ok(html.includes("18 Mar 2027"), "CWB window return");
+  assert.ok(html.includes("A$4,898"), "best in window");
+  assert.ok(html.includes("5 Feb"), "window departure");
+  assert.ok(html.includes("22 Mar 2027"), "window return");
 
-  // Target line — cheapest pinned fare is GRU at 5,099, so 599 to go.
+  // Target line — the pinned fare is 5,687, so 1,187 to go.
   assert.ok(html.includes("Alert target A$4,500"), "target line");
-  assert.ok(html.includes("A$599 away"), "distance to target");
+  assert.ok(html.includes("A$1,187 away"), "distance to target");
 
-  // Budget and the three buttons.
+  // Budget and the two buttons.
   assert.ok(html.includes("42 of 235 searches used this month"), "budget line");
   assert.ok(html.includes(DASH), "dashboard link");
   assert.ok(html.includes(gf("CWB", "2027-02-06", "2027-03-14")), "CWB Google Flights link");
-  assert.ok(html.includes(gf("GRU", "2027-02-06", "2027-03-14")), "GRU Google Flights link");
   assert.ok(html.includes("edit MAIL_TO secret to change recipients"), "footer note");
 
   assertNoJunk(out, "full body");
 });
 
+test("the digest never mentions the dropped destination", () => {
+  const { html } = renderEmail({ config, latest: fullFixture(), now: NOW });
+  assert.ok(!html.includes("GRU"), "no GRU anywhere");
+  assert.ok(!html.includes("São Paulo"), "no São Paulo anywhere");
+});
+
 test("full digest shows no alert banner while the target is unmet", () => {
   const { html } = renderEmail({ config, latest: fullFixture(), now: NOW });
   assert.ok(!html.includes("Under target"), "banner must stay off until the alert fires");
+});
+
+/* ---------------------------------------------------------------- *
+ * The watched routes
+ * ---------------------------------------------------------------- */
+
+test("a watch route that returns shows its price instead of the empty state", () => {
+  const latest = fullFixture();
+  latest.routes.viaSyd.current = offer(6100, SYD);
+  latest.routes.viaSyd.lastSeen = { offer: offer(6100, SYD), ts: "2026-08-17T10:13:51.826Z", depDate: "2027-02-06", retDate: "2027-03-14" };
+  const out = renderEmail({ config, latest, now: NOW });
+  assert.ok(out.html.includes("A$6,100"), "the watch route's price");
+  assert.ok(!out.html.includes("Not currently offered"), "the empty state is gone once it returns");
+  assertNoJunk(out, "watch live");
+});
+
+test("a watch route that has been seen before keeps the sighting on the record", () => {
+  const latest = fullFixture();
+  latest.routes.viaSyd.lastSeen = {
+    offer: offer(6400, SYD), ts: "2026-08-09T10:00:00.000Z", depDate: "2027-02-06", retDate: "2027-03-14",
+  };
+  const out = renderEmail({ config, latest, now: NOW });
+  assert.ok(out.html.includes("Not currently offered"), "still not on the board");
+  assert.ok(out.html.includes("A$6,400"), "last-seen price");
+  assert.ok(out.html.includes("9 Aug 2026"), "last-seen date");
+  assertNoJunk(out, "watch last seen");
+});
+
+test("the primary route falls back to its last sighting when today's search misses", () => {
+  const latest = fullFixture();
+  latest.routes.viaMel.current = null;
+  latest.routes.viaMel.lastSeen = {
+    offer: offer(5010), ts: "2026-08-09T10:00:00.000Z", depDate: "2027-02-06", retDate: "2027-03-14",
+  };
+  const out = renderEmail({ config, latest, now: NOW });
+  assert.ok(out.html.includes("Not currently offered"), "the not-offered headline");
+  assert.ok(out.html.includes("A$5,010"), "last-seen price");
+  assert.ok(out.html.includes("9 Aug 2026"), "last-seen date");
+  assertNoJunk(out, "primary last seen");
 });
 
 /* ---------------------------------------------------------------- *
@@ -186,40 +223,23 @@ test("full digest shows no alert banner while the target is unmet", () => {
 test("sparse digest degrades to em dashes instead of placeholders", () => {
   const out = renderEmail({ config, latest: sparseFixture(), now: NOW });
   const { html } = out;
-  assert.ok(html.includes("Curitiba"), "cards still render");
-  assert.ok(html.includes("São Paulo"), "cards still render");
+  assert.ok(html.includes("Curitiba"), "the card still renders");
   assert.ok(html.includes("—"), "missing metrics render as an em dash");
   assert.ok(html.includes("No fare"), "a missing headline price says so in words");
+  assert.ok(html.includes("Not currently offered"), "both routes show the watching state");
   assert.ok(html.includes(DASH), "dashboard link survives");
-  // The verify buttons fall back to the pinned dates from config.
-  assert.ok(html.includes(gf("CWB", "2027-02-06", "2027-03-14")), "CWB link falls back to config dates");
-  assert.ok(html.includes(gf("GRU", "2027-02-06", "2027-03-14")), "GRU link falls back to config dates");
+  // The verify button falls back to the pinned dates from config.
+  assert.ok(html.includes(gf("CWB", "2027-02-06", "2027-03-14")), "link falls back to config dates");
   assert.ok(html.includes("Alert target A$4,500"), "target line still present");
   assertNoJunk(out, "sparse body");
 });
 
-test("sparse digest shows the ideal route's not-seen state", () => {
-  const { html } = renderEmail({ config, latest: sparseFixture(), now: NOW });
-  assert.ok(html.includes("Not seen in the latest search"), "ideal empty state");
-});
-
-test("ideal route falls back to the last sighting when today's search misses", () => {
+test("a latest.json with no routes key at all still renders", () => {
   const latest = sparseFixture();
-  latest.idealRoute = {
-    latest: null,
-    latestTs: "2026-08-17T10:13:51.826Z",
-    lastSeen: {
-      ts: "2026-08-09T10:00:00.000Z",
-      depDate: "2027-02-06",
-      retDate: "2027-03-14",
-      offer: offer(5010, ["BNE", "SYD", "SCL", "CWB"]),
-    },
-  };
+  delete latest.routes;
   const out = renderEmail({ config, latest, now: NOW });
-  assert.ok(out.html.includes("Not seen in the latest search"), "still the not-seen headline");
-  assert.ok(out.html.includes("A$5,010"), "last-seen price");
-  assert.ok(out.html.includes("9 Aug 2026"), "last-seen date");
-  assertNoJunk(out, "ideal last seen");
+  assert.ok(out.html.includes("via Melbourne"), "the route comes from config when the data is silent");
+  assertNoJunk(out, "no routes key");
 });
 
 /* ---------------------------------------------------------------- *
@@ -229,7 +249,7 @@ test("ideal route falls back to the last sighting when today's search misses", (
 test("alert-active digest leads the target section with a banner", () => {
   const latest = fullFixture();
   latest.alert = { active: true, priceAud2pax: 4410, targetAud2pax: 4500 };
-  latest.pinned.GRU.cheapest = offer(4410, ["BNE", "MEL", "SCL", "GRU"]);
+  latest.pinned.CWB.cheapest = offer(4410);
   const out = renderEmail({ config, latest, now: NOW });
   assert.ok(out.html.includes("Under target"), "banner headline");
   assert.ok(out.html.includes("A$4,410"), "banner price");
@@ -293,5 +313,6 @@ test("renders against the repository's real latest.json", () => {
   const latest = JSON.parse(readFileSync(new URL("../data/latest.json", import.meta.url)));
   const out = renderEmail({ config, latest, now: NOW });
   assertNoJunk(out, "real data");
-  assert.ok(out.subject.startsWith("✈ BNE→Brazil"), out.subject);
+  assert.ok(out.subject.startsWith("✈ BNE→CWB"), out.subject);
+  assert.ok(!out.html.includes("GRU"), "the regenerated data carries no GRU");
 });
