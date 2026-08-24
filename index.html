@@ -6,8 +6,8 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#e9eef1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080f14" media="(prefers-color-scheme: dark)">
-<meta name="description" content="Daily flight-price tracker for Brisbane to Curitiba and Sao Paulo, February to March 2027, two travellers.">
-<title>Southbound — BNE to Brazil, Feb 2027</title>
+<meta name="description" content="Daily flight-price tracker for Brisbane to Curitiba, February to March 2027, two travellers.">
+<title>Southbound — BNE to Curitiba, Feb 2027</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2029'/%3E%3Cpath d='M5 21c6-9 16-13 22-13' stroke='%23f0b95e' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='21' r='3' fill='%23f0b95e'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" defer></script>
@@ -27,7 +27,7 @@
       </svg>
       <span class="brand-word">Southbound</span>
     </div>
-    <p class="trip-line" id="trip-line">Brisbane → Curitiba &amp; São&nbsp;Paulo · 2&nbsp;travellers · Feb–Mar&nbsp;2027</p>
+    <p class="trip-line" id="trip-line">Brisbane → Curitiba · 2&nbsp;travellers · Feb–Mar&nbsp;2027</p>
     <p class="freshness" id="freshness" aria-live="polite">
       <span class="dot" aria-hidden="true"></span><span class="freshness-text">Loading price data…</span>
     </p>
@@ -44,12 +44,12 @@
     <p class="eyebrow">No prices yet</p>
     <h1 class="waiting-title">Waiting for the first fetch.</h1>
     <p class="waiting-body">
-      The tracker searches Google Flights twice daily, morning and evening Brisbane time, and sweeps
-      flexible dates once overnight. The moment the first search lands, this page fills with prices,
-      deltas and trends.
+      The tracker searches Google Flights three times a day, morning, afternoon and evening Brisbane
+      time, and sweeps flexible dates once overnight. The moment the first search lands, this page
+      fills with prices, deltas and trends.
     </p>
-    <div class="strip strip--lg" aria-label="Ideal route: Brisbane, Sydney, Santiago, Curitiba">
-      <span class="strip-node">BNE</span><i class="strip-leg"></i><span class="strip-node">SYD</span><i class="strip-leg"></i><span class="strip-node">SCL</span><i class="strip-leg"></i><span class="strip-node">CWB</span>
+    <div class="strip strip--lg" aria-label="The route we want: Brisbane, Melbourne, Santiago, Curitiba">
+      <span class="strip-node">BNE</span><i class="strip-leg"></i><span class="strip-node">MEL</span><i class="strip-leg"></i><span class="strip-node">SCL</span><i class="strip-leg"></i><span class="strip-node">CWB</span>
     </div>
     <p class="waiting-foot">Watching for a return under <strong id="waiting-target">A$4,500</strong> for two.</p>
   </section>
@@ -58,13 +58,19 @@
 <main class="wrap" id="dash" hidden>
 
   <section id="hero" aria-labelledby="hero-h">
-    <h2 class="sr-only" id="hero-h">Pinned dates</h2>
+    <h2 class="sr-only" id="hero-h">The route you want, and the cheapest on the pinned dates</h2>
     <div class="hero-grid" id="hero-cards"></div>
   </section>
 
-  <section id="ideal-route" aria-labelledby="ideal-h">
-    <h2 class="sr-only" id="ideal-h">Ideal LATAM route</h2>
-    <div id="ideal-card"></div>
+  <section id="route-watch" aria-labelledby="watch-h" class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">Route watch</p>
+        <h2 class="card-title" id="watch-h">The exact paths we track</h2>
+      </div>
+    </div>
+    <div class="watch-grid" id="watch-cards"></div>
+    <div class="watch-spark" id="watch-spark" hidden></div>
   </section>
 
   <section id="trend" aria-labelledby="trend-h" class="card">
@@ -76,7 +82,7 @@
       <button class="ghost-btn" type="button" id="trend-toggle" aria-expanded="false" aria-controls="trend-table">Table</button>
     </div>
     <ul class="legend" id="trend-legend"></ul>
-    <div class="chart-box"><canvas id="trend-canvas" role="img" aria-label="Line chart of daily cheapest prices per destination"></canvas></div>
+    <div class="chart-box"><canvas id="trend-canvas" role="img" aria-label="Line chart of the daily cheapest fare on the pinned dates, the best flexible fare, and the via-Melbourne route"></canvas></div>
     <p class="chart-empty" id="trend-empty" hidden>Not enough history yet — the trend line needs at least two days of searches.</p>
     <div class="scroll-x" id="trend-table" hidden></div>
   </section>
@@ -87,7 +93,6 @@
         <p class="eyebrow">Flexible dates</p>
         <h2 class="card-title" id="heat-h">Departure day × trip length</h2>
       </div>
-      <div class="segmented" id="heat-dests" role="group" aria-label="Destination shown in the calendar"></div>
     </div>
     <div class="scroll-x heat-scroll"><div class="heat-grid" id="heat-grid"></div></div>
     <div class="heat-foot">

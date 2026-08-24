@@ -1,6 +1,6 @@
-// Southbound — BNE → Brazil price tracker dashboard.
+// Southbound — BNE → Curitiba price tracker dashboard.
 // Reads data/latest.json + data/daily.json (written by scripts/fetch.mjs) and
-// renders six sections: hero, ideal route, trend, heatmap, offers, meta.
+// renders six sections: hero, route watch, trend, heatmap, offers, meta.
 
 /* ------------------------------------------------------------------ *
  * Core data layer
@@ -39,10 +39,20 @@ function latestPairPrices(daily, dest) {
  * ------------------------------------------------------------------ */
 
 const LATAM = new Set(["LA", "JJ", "XL", "LU", "LP", "PZ", "4C", "4M"]);
-const IDEAL_PATH = ["BNE", "SYD", "SCL", "CWB"];
-const CITY = { CWB: "Curitiba", GRU: "São Paulo", BNE: "Brisbane", SYD: "Sydney", SCL: "Santiago" };
+
+// The watched routes, mirroring config.json. latest.json carries each route's price
+// and state under the same ids; the paths live here because the page is static and
+// never fetches config. Keep the two in step.
+const WATCHED = [
+  { id: "viaMel", label: "via Melbourne", role: "primary", path: ["BNE", "MEL", "SCL", "CWB"] },
+  { id: "viaSyd", label: "via Sydney", role: "watch", path: ["BNE", "SYD", "SCL", "CWB"] },
+];
+const PRIMARY = WATCHED.find((r) => r.role === "primary") ?? WATCHED[0];
+const DEST = PRIMARY.path.at(-1);
+
+const CITY = { CWB: "Curitiba", BNE: "Brisbane", MEL: "Melbourne", SYD: "Sydney", SCL: "Santiago" };
 const AIRLINE = { LA: "LATAM", JJ: "LATAM Brasil", QF: "Qantas", VA: "Virgin Australia", NZ: "Air New Zealand", UA: "United", AA: "American", DL: "Delta", EK: "Emirates", QR: "Qatar Airways", SQ: "Singapore Airlines", AC: "Air Canada", AR: "Aerolíneas Argentinas", G3: "GOL", AD: "Azul", CM: "Copa", AM: "Aeroméxico", ET: "Ethiopian", SA: "South African", TP: "TAP", IB: "Iberia", AF: "Air France", KL: "KLM", BA: "British Airways" };
-const STALE_HOURS = 14; // pinned runs twice daily (08:00 / 20:00 Brisbane)
+const STALE_HOURS = 14; // pinned runs three times daily (08:00 / 14:00 / 20:00 Brisbane)
 
 /* ------------------------------------------------------------------ *
  * Formatting
@@ -118,14 +128,11 @@ function routeStrip(codes, big = false) {
   return strip;
 }
 
-// Colour follows the entity: each destination keeps one hue across the hero
-// cards, the trend lines and the offers table.
-const DEST_SLOT = new Map();
-const slotOf = (dest) => DEST_SLOT.get(dest) ?? 0;
-function assignSlots(dests) {
-  DEST_SLOT.clear();
-  dests.forEach((dest, i) => DEST_SLOT.set(dest, i));
-}
+// Colour follows the entity, not its rank: the cheapest-fare figures are blue
+// wherever they appear, the primary watched route is gold on the cards and amber
+// on the chart. Nothing is repainted when a series comes or goes.
+const ENTITY = { cheapest: "--series-1", route: "--series-route" };
+const seriesColor = (entity) => cssVar(ENTITY[entity]) || "#2568d2";
 
 function deltaChip(label, n) {
   const cls = n == null ? "d--none" : n === 0 ? "d--flat" : n < 0 ? "d--good" : "d--bad";
@@ -170,28 +177,89 @@ function sparkline(series, { w = 600, hgt = 66 } = {}) {
 }
 
 /* ------------------------------------------------------------------ *
- * Section: hero — pinned-date price cards
+ * Watched routes — the slot in latest.json, and its movement
  * ------------------------------------------------------------------ */
 
-function heroCard(dest, entry, latest, lead) {
+const routeState = (latest, route) =>
+  latest.routes?.[route.id] ?? { label: route.label, role: route.role, current: null, currentTs: null, lastSeen: null };
+
+const routeSeries = (daily, route) =>
+  Object.entries(daily.routeDaily?.[route.id] ?? {}).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+
+// latest.json carries no per-route delta, but daily.json's per-route series does:
+// compare today's price with the most recent earlier day that recorded this route.
+function routeMove(daily, route, price) {
+  if (price == null) return null;
+  const series = routeSeries(daily, route);
+  const prev = series.filter(([d]) => d < (series.at(-1)?.[0] ?? "")).at(-1);
+  return prev ? { move: price - prev[1], sinceDay: prev[0] } : null;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section: hero — the route you want, beside the cheapest on the board
+ * ------------------------------------------------------------------ */
+
+function primaryCard(latest, daily) {
+  const route = PRIMARY;
+  const s = routeState(latest, route);
+  const o = s.current;
+  const card = h("article", { class: "card rcard rcard--primary" + (o ? " is-live" : "") });
+
+  card.append(h("p", { class: "eyebrow eyebrow--gold" }, "The route you want · ", s.label || route.label));
+  card.append(routeStrip(route.path, true));
+
+  if (o) {
+    card.append(h("p", { class: "price price--gold" }, aud(o.priceAud2pax)));
+    const tags = h("div", { class: "rcard-tags" },
+      h("span", { class: "tag" }, (o.carriers?.length ? o.carriers : [o.validating]).filter(Boolean).join(" · ") || "carrier unknown"),
+      h("span", { class: "tag" }, o.outStops === 0 ? "non-stop" : `${o.outStops} stops`),
+      h("span", { class: "tag" }, fmtDuration(o.outDurationMin), " outbound"));
+    if (isLatam(o.validating)) tags.prepend(latamBadge());
+    card.append(tags);
+
+    const mv = routeMove(daily, route, o.priceAud2pax);
+    if (mv) {
+      card.append(h("p", { class: "rcard-move" },
+        h("span", { class: mv.move <= 0 ? "d--good" : "d--bad" }, mv.move === 0 ? "no change" : delta(mv.move)),
+        ` since ${fmtDay(mv.sinceDay)}`));
+    }
+    card.append(h("p", { class: "rcard-note" }, "On the board in the search at ", fmtStamp(s.currentTs), "."));
+  } else {
+    card.append(h("p", { class: "rcard-state" }, "Watching — not currently offered"));
+    card.append(h("p", { class: "rcard-note" }, lastSeenNote(s, "No airline has sold this exact path since tracking began.")));
+  }
+  return card;
+}
+
+/** "Last seen 17 Aug, 8:13 pm at A$5,010 for 6 Feb 2027 → 14 Mar 2027." */
+function lastSeenNote(s, fallback) {
+  const seen = s.lastSeen;
+  if (!seen?.offer) return fallback;
+  const dates = seen.depDate && seen.retDate ? ` for ${fmtDayYear(seen.depDate)} → ${fmtDayYear(seen.retDate)}` : "";
+  return `Last seen ${fmtStamp(seen.ts)} at ${aud(seen.offer.priceAud2pax)}${dates}.`;
+}
+
+function cheapestCard(latest) {
+  const entry = latest.pinned?.[DEST] ?? null;
   const cheapest = entry?.cheapest ?? null;
   const price = cheapest?.priceAud2pax ?? null;
-  const d = latest.deltas?.[dest] ?? {};
-  const low = latest.allTimeLow?.[dest] ?? null;
-  const best = latest.bestInWindow?.[dest] ?? null;
+  const d = latest.deltas?.[DEST] ?? {};
+  const low = latest.allTimeLow?.[DEST] ?? null;
+  const best = latest.bestInWindow?.[DEST] ?? null;
   const latam = entry?.cheapestLatam ?? null;
-  const card = h("article", { class: "card pcard" + (lead ? " pcard--lead" : ""), "data-dest": dest, "data-slot": String(slotOf(dest)) });
+  const card = h("article", { class: "card pcard" });
 
+  card.append(h("p", { class: "eyebrow" }, "Cheapest on the pinned dates"));
   card.append(h("div", { class: "pcard-head" },
-    h("span", { class: "code" }, dest),
-    h("span", { class: "city" }, CITY[dest] ?? dest),
+    h("span", { class: "code" }, DEST),
+    h("span", { class: "city" }, CITY[DEST] ?? DEST),
     cheapest && isLatam(cheapest.validating) ? latamBadge() : null));
 
   if (price == null) {
     card.append(
       h("p", { class: "price price--none" }, "No fare"),
       h("p", { class: "price-note" }, entry
-        ? "The last search for these dates came back empty. It runs again at the next twice-daily fetch."
+        ? "The last search for these dates came back empty. It runs again at the next fetch."
         : "Not searched yet."));
     return card;
   }
@@ -204,7 +272,7 @@ function heroCard(dest, entry, latest, lead) {
   if (cheapest.outRoute?.length) {
     card.append(routeStrip(cheapest.outRoute));
     card.append(h("p", { class: "strip-note" },
-      `${cheapest.outStops === 0 ? "Non-stop" : cheapest.outStops + (cheapest.outStops === 1 ? " stop" : " stops")} · ${fmtDuration(cheapest.outDurationMin)} outbound · ${AIRLINE[cheapest.validating] ?? (cheapest.validating || "airline unknown")}`));
+      `${cheapest.outStops === 0 ? "Non-stop" : cheapest.outStops + (cheapest.outStops === 1 ? " stop" : " stops")} · ${fmtDuration(cheapest.outDurationMin)} outbound · ${(cheapest.carriers?.length ? cheapest.carriers : [cheapest.validating]).filter(Boolean).map((c) => AIRLINE[c] ?? c).join(" · ") || "airline unknown"}`));
   }
 
   const facts = h("dl", { class: "facts" });
@@ -218,78 +286,63 @@ function heroCard(dest, entry, latest, lead) {
   if (best) fact("Best flexible", aud(best.priceAud2pax), `${fmtDay(best.depDate)} → ${fmtDay(best.retDate)}`);
   if (facts.childElementCount) card.append(facts);
 
-  card.append(h("a", { class: "link-out", href: googleFlightsUrl(dest, entry.depDate, entry.retDate), target: "_blank", rel: "noopener" },
-    "Open ", dest, " on Google Flights", h("span", { "aria-hidden": "true" }, " ↗")));
+  card.append(h("a", { class: "link-out", href: googleFlightsUrl(DEST, entry.depDate, entry.retDate), target: "_blank", rel: "noopener" },
+    "Open ", DEST, " on Google Flights", h("span", { "aria-hidden": "true" }, " ↗")));
   return card;
 }
 
-function renderHero(latest) {
+function renderHero(latest, daily) {
   const box = $("hero-cards");
   clear(box);
-  const dests = Object.keys(latest.pinned ?? {});
-  if (!dests.length) {
-    box.append(h("article", { class: "card pcard" },
-      h("p", { class: "eyebrow" }, "Pinned dates"),
-      h("p", { class: "price price--none" }, "No fare yet"),
-      h("p", { class: "price-note" }, "Searches have run but none returned an offer for the pinned dates.")));
-    return;
-  }
-  dests.forEach((dest, i) => box.append(heroCard(dest, latest.pinned[dest], latest, i === 0)));
+  box.append(primaryCard(latest, daily), cheapestCard(latest));
 }
 
 /* ------------------------------------------------------------------ *
- * Section: ideal route — the LATAM BNE→SYD→SCL→CWB card
+ * Section: route watch — the state of every watched path, side by side
  * ------------------------------------------------------------------ */
 
-function renderIdeal(latest, daily) {
-  const box = $("ideal-card");
-  clear(box);
-  const ir = latest.idealRoute ?? {};
-  const dest = IDEAL_PATH.at(-1);
-  const pinned = latest.pinned?.[dest];
-  const card = h("article", { class: "card ideal" });
+function watchCard(latest, route) {
+  const s = routeState(latest, route);
+  const o = s.current;
+  const card = h("article", { class: "wcard" + (o ? " is-live" : "") });
 
-  card.append(h("p", { class: "eyebrow eyebrow--gold" }, "The route you want"));
-  card.append(routeStrip(IDEAL_PATH, true));
-  card.append(h("p", { class: "ideal-sub" }, `${CITY.BNE} → ${CITY.CWB} on LATAM metal, via ${CITY.SYD} and ${CITY.SCL}.`));
+  card.append(h("div", { class: "wcard-head" },
+    h("span", { class: "wcard-label" }, s.label || route.label),
+    h("span", { class: "wcard-role" }, route.role === "primary" ? "primary" : "watch")));
+  card.append(routeStrip(route.path));
 
-  if (ir.latest) {
-    const o = ir.latest;
-    card.append(h("div", { class: "ideal-figure" },
-      h("p", { class: "price price--gold" }, aud(o.priceAud2pax)),
-      h("div", { class: "ideal-tags" }, latamBadge(),
-        h("span", { class: "tag" }, (o.carriers ?? [o.validating]).join(" · ")),
-        h("span", { class: "tag" }, fmtDuration(o.outDurationMin), " outbound"))));
-    card.append(h("p", { class: "ideal-note" }, "Found in the search at ", fmtStamp(ir.latestTs), "."));
-  } else if (ir.lastSeen?.offer) {
-    const s = ir.lastSeen;
-    card.append(h("div", { class: "ideal-figure ideal-figure--past" },
-      h("p", { class: "ideal-state" }, "Not on the board today"),
-      h("p", { class: "price price--gold price--past" }, aud(s.offer.priceAud2pax))));
-    card.append(h("p", { class: "ideal-note" },
-      `Last seen ${fmtStamp(s.ts)} for ${fmtDayYear(s.depDate)} → ${fmtDayYear(s.retDate)}. Today's search returned no LATAM fare on this exact path.`));
+  if (o) {
+    card.append(h("p", { class: "wcard-price" }, aud(o.priceAud2pax)));
+    card.append(h("p", { class: "wcard-note" }, "On the board · checked ", fmtStamp(s.currentTs)));
   } else {
-    card.append(h("div", { class: "ideal-figure ideal-figure--past" },
-      h("p", { class: "ideal-state" }, "Never seen yet")));
-    card.append(h("p", { class: "ideal-note" },
-      "No LATAM-validated fare has come back on this exact path. Cheaper itineraries on other routings still show above."));
+    card.append(h("p", { class: "wcard-state" },
+      h("span", { class: "wcard-dot", "aria-hidden": "true" }), "Watching — not currently offered"));
+    card.append(h("p", { class: "wcard-note" },
+      lastSeenNote(s, s.currentTs ? "No sighting on record." : "Not searched yet.")));
   }
+  return card;
+}
 
-  // Sparkline over the pinned CWB pair's daily series.
-  const key = pinned ? `${dest}|${pinned.depDate}|${pinned.retDate}` : null;
-  const series = key && daily.pairs?.[key]
-    ? Object.entries(daily.pairs[key]).sort((a, b) => (a[0] < b[0] ? -1 : 1))
-    : [];
+function renderRouteWatch(latest, daily) {
+  const box = $("watch-cards");
+  clear(box);
+  for (const route of WATCHED) box.append(watchCard(latest, route));
+
+  // The primary route's own history, which the pinned-cheapest line cannot show.
+  const spark = $("watch-spark");
+  clear(spark);
+  const series = routeSeries(daily, PRIMARY);
   if (series.length >= 2) {
     const first = series[0], last = series.at(-1);
     const move = last[1] - first[1];
-    card.append(h("div", { class: "ideal-spark" },
-      sparkline(series),
+    spark.append(sparkline(series),
       h("p", { class: "spark-note" },
-        `${dest} on the pinned dates: ${aud(first[1])} on ${fmtDay(first[0])} → ${aud(last[1])} on ${fmtDay(last[0])}`,
-        h("span", { class: "spark-move " + (move <= 0 ? "d--good" : "d--bad") }, " ", move === 0 ? "no change" : delta(move)))));
+        `${PRIMARY.label} on the pinned dates: ${aud(first[1])} on ${fmtDay(first[0])} → ${aud(last[1])} on ${fmtDay(last[0])}`,
+        h("span", { class: "spark-move " + (move <= 0 ? "d--good" : "d--bad") }, " ", move === 0 ? "no change" : delta(move))));
+    spark.hidden = false;
+  } else {
+    spark.hidden = true;
   }
-  box.append(card);
 }
 
 /* ------------------------------------------------------------------ *
@@ -298,32 +351,28 @@ function renderIdeal(latest, daily) {
 
 let trendChart = null;
 
+// Three lines, two hues: the cheapest fare in blue (solid on the pinned dates,
+// dashed when the dates are flexible) and the primary watched route in amber.
+// The pair is validated for CVD separation on both surfaces.
 function buildTrendModel(latest, daily) {
-  const dests = Object.keys(latest.pinned ?? {}).length
-    ? Object.keys(latest.pinned)
-    : Object.keys(daily.bestPerDay ?? {});
-  const days = new Set();
-  const pinnedSeries = {}, bestSeries = {};
-  for (const dest of dests) {
-    const p = latest.pinned?.[dest];
-    const key = p ? `${dest}|${p.depDate}|${p.retDate}` : null;
-    pinnedSeries[dest] = (key && daily.pairs?.[key]) || {};
-    bestSeries[dest] = daily.bestPerDay?.[dest] || {};
-    Object.keys(pinnedSeries[dest]).forEach((d) => days.add(d));
-    Object.keys(bestSeries[dest]).forEach((d) => days.add(d));
-  }
-  const labels = [...days].sort();
-  const lines = [];
-  for (const dest of dests) {
-    const slot = slotOf(dest);
-    lines.push({ dest, kind: "pinned", label: `${dest} · pinned dates`, slot, dashed: false, data: labels.map((d) => pinnedSeries[dest][d] ?? null) });
-    lines.push({ dest, kind: "best", label: `${dest} · best flexible`, slot, dashed: true, data: labels.map((d) => bestSeries[dest][d] ?? null) });
-  }
-  return { labels, lines: lines.filter((l) => l.data.some((v) => v != null)), target: latest.alert?.targetAud2pax ?? null };
-}
+  const p = latest.pinned?.[DEST];
+  const pinnedSeries = (p && daily.pairs?.[`${DEST}|${p.depDate}|${p.retDate}`]) || {};
+  const bestSeries = daily.bestPerDay?.[DEST] || {};
+  const routeSeriesMap = daily.routeDaily?.[PRIMARY.id] || {};
 
-function seriesColor(slot) {
-  return cssVar(slot === 0 ? "--series-1" : "--series-2") || "#2a78d6";
+  const days = new Set([...Object.keys(pinnedSeries), ...Object.keys(bestSeries), ...Object.keys(routeSeriesMap)]);
+  const labels = [...days].sort();
+  const at = (series) => labels.map((d) => series[d] ?? null);
+
+  // The primary route leads the legend and is drawn on top: Chart.js paints dataset 0
+  // last, and the route often sits exactly on the cheapest line — when they coincide
+  // the amber must be the one you see, or the headline series vanishes under the blue.
+  const lines = [
+    { key: PRIMARY.id, label: `${PRIMARY.label} · pinned dates`, entity: "route", dashed: false, wide: true, data: at(routeSeriesMap) },
+    { key: "pinned", label: `${DEST} · pinned dates`, entity: "cheapest", dashed: false, data: at(pinnedSeries) },
+    { key: "best", label: `${DEST} · best flexible`, entity: "cheapest", dashed: true, data: at(bestSeries) },
+  ];
+  return { labels, lines: lines.filter((l) => l.data.some((v) => v != null)), target: latest.alert?.targetAud2pax ?? null };
 }
 
 function renderTrendLegend(model) {
@@ -332,7 +381,7 @@ function renderTrendLegend(model) {
   for (const line of model.lines) {
     const last = [...line.data].reverse().find((v) => v != null);
     box.append(h("li", { class: "legend-item" },
-      h("span", { class: "key" + (line.dashed ? " key--dashed" : ""), style: `--key:${seriesColor(line.slot)}`, "aria-hidden": "true" }),
+      h("span", { class: "key" + (line.dashed ? " key--dashed" : ""), style: `--key:${seriesColor(line.entity)}`, "aria-hidden": "true" }),
       h("span", { class: "legend-label" }, line.label),
       h("span", { class: "legend-val" }, aud(last))));
   }
@@ -427,14 +476,14 @@ function renderTrend(latest, daily) {
 
   const ink3 = cssVar("--ink-3"), hair = cssVar("--hair"), surface = cssVar("--surface");
   const datasets = model.lines.map((line) => {
-    const color = seriesColor(line.slot);
+    const color = seriesColor(line.entity);
     const lastIdx = line.data.reduce((acc, v, i) => (v != null ? i : acc), -1);
     return {
       label: line.label,
       data: line.data,
       borderColor: color,
       backgroundColor: color,
-      borderWidth: 2,
+      borderWidth: line.wide ? 2.5 : 2,
       borderDash: line.dashed ? [4, 3] : [],
       tension: 0.15,
       spanGaps: true,
@@ -491,7 +540,6 @@ function renderTrend(latest, daily) {
  * ------------------------------------------------------------------ */
 
 const HEAT_BINS = 5;
-let heatDest = null;
 
 function heatCells(daily, dest) {
   if (!daily?.pairs) return [];
@@ -532,7 +580,7 @@ function renderHeatmap(latest, daily) {
   const note = $("heat-scale-note");
   clear(grid); clear(scale);
   const target = latest.alert?.targetAud2pax ?? null;
-  const cells = heatCells(daily, heatDest);
+  const cells = heatCells(daily, DEST);
 
   if (!cells.length) {
     note.textContent = "";
@@ -540,7 +588,7 @@ function renderHeatmap(latest, daily) {
     grid.style.removeProperty("--cols");
     grid.classList.add("is-empty");
     grid.append(h("p", { class: "chart-empty" },
-      `No flexible-date searches for ${heatDest} yet. The overnight sweep works through the February grid a batch at a time.`));
+      `No flexible-date searches for ${DEST} yet. The overnight sweep works through the February grid a batch at a time.`));
     return;
   }
   grid.classList.remove("is-empty");
@@ -581,20 +629,6 @@ function renderHeatmap(latest, daily) {
   renderHeatDetail(null, target);
 }
 
-function renderHeatControls(latest, daily) {
-  const box = $("heat-dests");
-  clear(box);
-  const dests = [...new Set([...Object.keys(latest.pinned ?? {}), ...Object.keys(daily.bestPerDay ?? {})])];
-  if (!dests.length) dests.push("CWB");
-  if (!dests.includes(heatDest)) heatDest = dests[0];
-  for (const dest of dests) {
-    box.append(h("button", {
-      type: "button", class: "seg" + (dest === heatDest ? " is-on" : ""), "aria-pressed": dest === heatDest ? "true" : "false",
-      on: { click: () => { heatDest = dest; renderHeatControls(latest, daily); renderHeatmap(latest, daily); box.querySelector(".seg.is-on")?.focus(); } },
-    }, dest));
-  }
-}
-
 /* ------------------------------------------------------------------ *
  * Section: offers — latest offers table + filter
  * ------------------------------------------------------------------ */
@@ -616,19 +650,21 @@ const offerSig = (r) =>
 
 function offerRows(latest) {
   const rows = [];
-  // The ideal route is quoted against the pinned CWB pair, so it borrows those dates.
-  const idealDest = IDEAL_PATH.at(-1);
-  const idealPinned = latest.pinned?.[idealDest] ?? null;
-  const idealOffer = latest.idealRoute?.latest ?? null;
-  const ideal = idealOffer && idealPinned
-    ? {
-      dest: idealDest, kind: "Ideal route", ideal: true,
-      depDate: idealPinned.depDate, retDate: idealPinned.retDate,
-      price: idealOffer.priceAud2pax, offer: idealOffer,
-      ts: latest.idealRoute?.latestTs ?? idealPinned.ts,
-    }
-    : null;
-  const idealSig = ideal ? offerSig(ideal) : null;
+  // Watched routes are quoted against the pinned pair, so they borrow those dates.
+  const watched = [];
+  for (const route of WATCHED) {
+    const offer = routeState(latest, route).current;
+    const pinnedPair = latest.pinned?.[route.path.at(-1)];
+    if (!offer || !pinnedPair) continue;
+    watched.push({
+      dest: route.path.at(-1), kind: route.label, route: route.id, primary: route.role === "primary",
+      depDate: pinnedPair.depDate, retDate: pinnedPair.retDate,
+      price: offer.priceAud2pax, offer, ts: routeState(latest, route).currentTs ?? pinnedPair.ts,
+    });
+  }
+  // The primary route sits above the price sort; the rest join it.
+  watched.sort((a, b) => (b.primary === a.primary ? a.price - b.price : b.primary - a.primary));
+  const watchedSigs = new Set(watched.map(offerSig));
 
   for (const [dest, p] of Object.entries(latest.pinned ?? {})) {
     if (p.cheapest) rows.push({ dest, kind: "Pinned dates", depDate: p.depDate, retDate: p.retDate, price: p.cheapest.priceAud2pax, offer: p.cheapest, ts: p.ts });
@@ -642,8 +678,8 @@ function offerRows(latest) {
     rows.push({ dest, kind: "Best flexible", depDate: b.depDate, retDate: b.retDate, price: b.priceAud2pax, offer: null, ts: b.ts });
   }
   rows.sort((a, b) => a.price - b.price);
-  // The ideal row is pinned on top; the same offer must not appear twice below it.
-  return ideal ? [ideal, ...rows.filter((r) => offerSig(r) !== idealSig)] : rows;
+  // The same offer must never appear twice — once as a route, once as the cheapest.
+  return [...watched, ...rows.filter((r) => !watchedSigs.has(offerSig(r)))];
 }
 
 const offerFiltersActive = () => offerAirline !== "all" || offerStops !== "all";
@@ -657,8 +693,9 @@ function offerPasses(r) {
   return true;
 }
 
-function idealBadge() {
-  return h("span", { class: "badge badge--ideal", title: "BNE → SYD → SCL → CWB on LATAM — pinned to the top" }, "Ideal");
+function routeBadge(row) {
+  const path = WATCHED.find((r) => r.id === row.route)?.path.join(" → ") ?? "";
+  return h("span", { class: "badge badge--route", title: `${path} — a watched route` }, row.primary ? "Primary" : "Watched");
 }
 
 function renderOffers(latest) {
@@ -676,10 +713,10 @@ function renderOffers(latest) {
   }
   for (const r of rows) {
     const o = r.offer;
-    body.append(h("tr", { class: r.ideal ? "is-ideal" : null },
-      h("th", { scope: "row", "data-slot": String(slotOf(r.dest)) },
+    body.append(h("tr", { class: r.primary ? "is-primary" : r.route ? "is-watched" : null },
+      h("th", { scope: "row" },
         h("span", { class: "code code--sm" }, r.dest),
-        r.ideal ? idealBadge() : null,
+        r.route ? routeBadge(r) : null,
         h("span", { class: "row-kind" }, r.kind)),
       h("td", { class: "num strong" }, aud(r.price)),
       h("td", { class: "nowrap" }, `${fmtDay(r.depDate)} → ${fmtDay(r.retDate)}`,
@@ -699,8 +736,8 @@ function renderOffers(latest) {
     : "";
 
   const stamps = all.map((r) => r.ts).filter(Boolean).sort();
-  const pinnedLine = all.some((r) => r.ideal)
-    ? `The ideal route (${IDEAL_PATH.join(" → ")}) is pinned to the top; every other row is cheapest first. `
+  const pinnedLine = all.some((r) => r.primary)
+    ? `${PRIMARY.label} (${PRIMARY.path.join(" → ")}) is pinned to the top; every other row is cheapest first. `
     : "";
   note.textContent = stamps.length
     ? `${pinnedLine}Flexible rows carry the price only — the full itinerary is re-checked when those dates come round in the sweep. Newest row from ${fmtStamp(stamps.at(-1))}.`
@@ -805,7 +842,9 @@ function renderTarget(latest) {
 
 const CSV_COLS = ["ts", "origin", "dest", "depDate", "retDate", "tripDays", "status",
   "cheapestAud2pax", "cheapestValidating", "cheapestCarriers", "cheapestOutRoute", "cheapestBackRoute", "cheapestOutStops", "cheapestOutDurationMin",
-  "latamAud2pax", "latamValidating", "idealRouteAud2pax", "idealRouteValidating", "error"];
+  "latamAud2pax", "latamValidating",
+  ...WATCHED.flatMap((r) => [`${r.id}Aud2pax`, `${r.id}Validating`]),
+  "error"];
 
 const csvCell = (v) => {
   const s = v == null ? "" : Array.isArray(v) ? v.join(" ") : String(v);
@@ -820,10 +859,15 @@ function historyToCsv(text) {
     let r;
     try { r = JSON.parse(raw); } catch { continue; }
     rows++;
-    const c = r.cheapest ?? {}, l = r.cheapestLatam ?? {}, i = r.idealRoute ?? {};
+    const c = r.cheapest ?? {}, l = r.cheapestLatam ?? {};
+    // Rows written before the route-watch redesign carry a single `idealRoute` on the
+    // via-Sydney path; export it under that route's columns so the CSV stays one table.
+    const routes = r.routes ?? { viaSyd: r.idealRoute ?? null };
     lines.push([r.ts, r.origin, r.dest, r.depDate, r.retDate, r.tripDays, r.status,
       c.priceAud2pax, c.validating, c.carriers, c.outRoute, c.backRoute, c.outStops, c.outDurationMin,
-      l.priceAud2pax, l.validating, i.priceAud2pax, i.validating, r.error].map(csvCell).join(","));
+      l.priceAud2pax, l.validating,
+      ...WATCHED.flatMap((w) => [routes[w.id]?.priceAud2pax, routes[w.id]?.validating]),
+      r.error].map(csvCell).join(","));
   }
   return { csv: lines.join("\n") + "\n", rows };
 }
@@ -852,12 +896,11 @@ async function exportCsv() {
 }
 
 function renderMetaLinks(latest) {
-  const dest = Object.keys(latest.pinned ?? {})[0] ?? IDEAL_PATH.at(-1);
-  const p = latest.pinned?.[dest];
+  const p = latest.pinned?.[DEST];
   const link = $("meta-gflights");
   if (p) {
-    link.href = googleFlightsUrl(dest, p.depDate, p.retDate);
-    link.textContent = `Search ${dest} on Google Flights ↗`;
+    link.href = googleFlightsUrl(DEST, p.depDate, p.retDate);
+    link.textContent = `Search ${DEST} on Google Flights ↗`;
   }
 }
 
@@ -866,24 +909,23 @@ function renderMetaLinks(latest) {
  * ------------------------------------------------------------------ */
 
 function renderAll(latest, daily) {
-  assignSlots([...new Set([...Object.keys(latest.pinned ?? {}), ...Object.keys(daily.bestPerDay ?? {}), ...Object.keys(latest.bestInWindow ?? {})])]);
   renderFreshness(latest);
   renderTarget(latest);
-  renderHero(latest);
-  renderIdeal(latest, daily);
+  renderHero(latest, daily);
+  renderRouteWatch(latest, daily);
   renderTrend(latest, daily);
-  renderHeatControls(latest, daily);
   renderHeatmap(latest, daily);
   renderOfferFilters(latest);
   renderOffers(latest);
   renderBudget(latest);
   renderMetaLinks(latest);
 
-  const p = latest.pinned?.[Object.keys(latest.pinned ?? {})[0]];
+  const p = latest.pinned?.[DEST];
   if (p) {
+    // Dates keep their own spaces unbroken, so "6 Feb 2027" never wraps mid-date.
     const nb = (s) => s.replace(/ /g, " ");
     $("trip-line").textContent =
-      `Brisbane → Curitiba & São Paulo · 2 travellers · ${nb(fmtDayYear(p.depDate))} → ${nb(fmtDayYear(p.retDate))}`;
+      `Brisbane → ${CITY[DEST]} · 2 travellers · ${nb(fmtDayYear(p.depDate))} → ${nb(fmtDayYear(p.retDate))}`;
   }
 }
 
