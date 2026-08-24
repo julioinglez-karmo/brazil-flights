@@ -44,24 +44,17 @@ jobs:
             --repo "$GITHUB_REPOSITORY"
       # The digest reads the data the fetch step just wrote, so it always
       # describes this run. Recipients live in MAIL_TO, never in the repo.
-      #
-      # Both digest steps are continue-on-error: the SMTP credentials are
-      # currently broken, and a failed send must not mark the nightly sweep
-      # red — the data it just committed is the job that matters. The `email`
-      # workflow stays strict, so a manual run still surfaces the real error.
       - name: Build email digest
         id: digest
-        continue-on-error: true
         run: node scripts/email.mjs --out "$RUNNER_TEMP/digest.html"
       - name: Send email digest
-        continue-on-error: true
         uses: dawidd6/action-send-mail@v18
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_APP_PASSWORD }}
+          server_address: smtp-relay.brevo.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.BREVO_LOGIN }}
+          password: ${{ secrets.BREVO_SMTP_KEY }}
           from: Southbound Tracker <${{ secrets.MAIL_USERNAME }}>
           to: ${{ secrets.MAIL_TO }}
           subject: ${{ steps.digest.outputs.subject }}

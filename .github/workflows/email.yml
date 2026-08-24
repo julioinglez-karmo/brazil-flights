@@ -19,11 +19,11 @@ jobs:
       - name: Send email digest
         uses: dawidd6/action-send-mail@v18
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_APP_PASSWORD }}
+          server_address: smtp-relay.brevo.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.BREVO_LOGIN }}
+          password: ${{ secrets.BREVO_SMTP_KEY }}
           from: Southbound Tracker <${{ secrets.MAIL_USERNAME }}>
           to: ${{ secrets.MAIL_TO }}
           subject: ${{ steps.digest.outputs.subject }}
