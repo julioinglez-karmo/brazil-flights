@@ -1,41 +1,41 @@
 {
- "updatedAt": "2026-09-11T08:21:39.415Z",
+ "updatedAt": "2026-09-11T13:55:13.718Z",
  "sweepCursor": 8,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 72,
+  "callsUsed": 73,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-11T08:21:39.415Z",
+   "ts": "2026-09-11T13:55:13.718Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6053,
-    "validating": "UA",
+    "priceAud2pax": 6023,
+    "validating": "QF",
     "carriers": [
-     "UA",
-     "G3"
+     "QF",
+     "LA"
     ],
     "outRoute": [
      "BNE",
-     "SFO",
-     "ORD",
+     "SYD",
+     "SCL",
      "GRU",
      "CWB"
     ],
     "backRoute": [],
     "outStops": 3,
-    "outDurationMin": 2150
+    "outDurationMin": 1785
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 217,
-   "vs7dAud": 272
+   "vsYesterdayAud": 187,
+   "vs7dAud": 242
   }
  },
  "routes": {
@@ -43,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6077,
+    "priceAud2pax": 6028,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -57,12 +57,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2125
    },
-   "currentTs": "2026-09-11T08:21:39.415Z",
+   "currentTs": "2026-09-11T13:55:13.718Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6077,
+     "priceAud2pax": 6028,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,9 +76,9 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2005
+     "outDurationMin": 2125
     },
-    "ts": "2026-09-11T08:21:39.415Z",
+    "ts": "2026-09-11T13:55:13.718Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -87,7 +87,7 @@
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-09-11T08:21:39.415Z",
+   "currentTs": "2026-09-11T13:55:13.718Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6084,
