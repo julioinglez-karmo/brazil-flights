@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-09-12T08:10:14.734Z",
+ "updatedAt": "2026-09-12T13:11:49.810Z",
  "sweepCursor": 12,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 79,
+  "callsUsed": 80,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-12T08:10:14.734Z",
+   "ts": "2026-09-12T13:11:49.810Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -59,7 +59,7 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-09-12T08:10:14.734Z",
+   "currentTs": "2026-09-12T13:11:49.810Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6078,
@@ -78,7 +78,7 @@
      "outStops": 2,
      "outDurationMin": 2005
     },
-    "ts": "2026-09-12T08:10:14.734Z",
+    "ts": "2026-09-12T13:11:49.810Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -87,7 +87,7 @@
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-09-12T08:10:14.734Z",
+   "currentTs": "2026-09-12T13:11:49.810Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6171,
