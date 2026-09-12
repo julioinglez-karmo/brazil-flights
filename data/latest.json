@@ -1,49 +1,18 @@
 {
- "updatedAt": "2026-09-12T16:23:39.942Z",
+ "updatedAt": "2026-09-12T23:29:13.382Z",
  "sweepCursor": 16,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 84,
+  "callsUsed": 85,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-12T13:11:49.810Z",
+   "ts": "2026-09-12T23:29:13.382Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6062,
-    "validating": "UA",
-    "carriers": [
-     "UA",
-     "G3"
-    ],
-    "outRoute": [
-     "BNE",
-     "SFO",
-     "ORD",
-     "GRU",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 3,
-    "outDurationMin": 2150
-   },
-   "cheapestLatam": null
-  }
- },
- "deltas": {
-  "CWB": {
-   "vsYesterdayAud": 39,
-   "vs7dAud": 235
-  }
- },
- "routes": {
-  "viaMel": {
-   "label": "via Melbourne",
-   "role": "primary",
-   "current": {
-    "priceAud2pax": 6078,
+    "priceAud2pax": 6079,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -59,10 +28,40 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-09-12T13:11:49.810Z",
+   "cheapestLatam": null
+  }
+ },
+ "deltas": {
+  "CWB": {
+   "vsYesterdayAud": 56,
+   "vs7dAud": 252
+  }
+ },
+ "routes": {
+  "viaMel": {
+   "label": "via Melbourne",
+   "role": "primary",
+   "current": {
+    "priceAud2pax": 6079,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "MEL",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2005
+   },
+   "currentTs": "2026-09-12T23:29:13.382Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5845,
+     "priceAud2pax": 6079,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -78,16 +77,16 @@
      "outStops": 2,
      "outDurationMin": 2005
     },
-    "ts": "2026-09-12T16:23:39.942Z",
-    "depDate": "2027-02-11",
-    "retDate": "2027-03-13"
+    "ts": "2026-09-12T23:29:13.382Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-09-12T13:11:49.810Z",
+   "currentTs": "2026-09-12T23:29:13.382Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5877,
