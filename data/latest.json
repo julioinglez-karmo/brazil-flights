@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-09-22T08:51:06.031Z",
+ "updatedAt": "2026-09-22T14:13:07.957Z",
  "sweepCursor": 20,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 149,
+  "callsUsed": 150,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-22T08:51:06.031Z",
+   "ts": "2026-09-22T14:13:07.957Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6078,
+    "priceAud2pax": 6079,
     "validating": "UA",
     "carriers": [
      "UA",
@@ -34,8 +34,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": -4,
-   "vs7dAud": 152
+   "vsYesterdayAud": -3,
+   "vs7dAud": 153
   }
  },
  "routes": {
@@ -59,7 +59,7 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-09-22T08:51:06.031Z",
+   "currentTs": "2026-09-22T14:13:07.957Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6343,
@@ -78,7 +78,7 @@
      "outStops": 2,
      "outDurationMin": 2005
     },
-    "ts": "2026-09-22T08:51:06.031Z",
+    "ts": "2026-09-22T14:13:07.957Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -103,7 +103,7 @@
     "outStops": 2,
     "outDurationMin": 2525
    },
-   "currentTs": "2026-09-22T08:51:06.031Z",
+   "currentTs": "2026-09-22T14:13:07.957Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6159,
@@ -122,7 +122,7 @@
      "outStops": 2,
      "outDurationMin": 2525
     },
-    "ts": "2026-09-22T08:51:06.031Z",
+    "ts": "2026-09-22T14:13:07.957Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
