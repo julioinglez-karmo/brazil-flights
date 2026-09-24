@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-09-24T00:04:06.407Z",
+ "updatedAt": "2026-09-24T08:48:07.774Z",
  "sweepCursor": 28,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 162,
+  "callsUsed": 163,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-24T00:04:06.407Z",
+   "ts": "2026-09-24T08:48:07.774Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -59,7 +59,7 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-09-24T00:04:06.407Z",
+   "currentTs": "2026-09-24T08:48:07.774Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6343,
@@ -78,7 +78,7 @@
      "outStops": 2,
      "outDurationMin": 2005
     },
-    "ts": "2026-09-24T00:04:06.407Z",
+    "ts": "2026-09-24T08:48:07.774Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -101,9 +101,9 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2160
+    "outDurationMin": 2455
    },
-   "currentTs": "2026-09-24T00:04:06.407Z",
+   "currentTs": "2026-09-24T08:48:07.774Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6159,
@@ -120,9 +120,9 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2160
+     "outDurationMin": 2455
     },
-    "ts": "2026-09-24T00:04:06.407Z",
+    "ts": "2026-09-24T08:48:07.774Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
