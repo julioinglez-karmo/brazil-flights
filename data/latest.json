@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-09-24T17:53:33.083Z",
+ "updatedAt": "2026-09-25T00:06:30.989Z",
  "sweepCursor": 0,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 168,
+  "callsUsed": 169,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-24T14:29:33.893Z",
+   "ts": "2026-09-25T00:06:30.989Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -34,8 +34,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 15,
-   "vs7dAud": 68
+   "vsYesterdayAud": 12,
+   "vs7dAud": 15
   }
  },
  "routes": {
@@ -43,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6344,
+    "priceAud2pax": 6389,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -59,10 +59,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-09-24T14:29:33.893Z",
+   "currentTs": "2026-09-25T00:06:30.989Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6357,
+     "priceAud2pax": 6389,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,18 +76,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2260
+     "outDurationMin": 2005
     },
-    "ts": "2026-09-24T17:53:33.083Z",
-    "depDate": "2027-02-27",
-    "retDate": "2027-03-29"
+    "ts": "2026-09-25T00:06:30.989Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
    "current": {
-    "priceAud2pax": 6161,
+    "priceAud2pax": 6113,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -101,12 +101,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2455
+    "outDurationMin": 2340
    },
-   "currentTs": "2026-09-24T14:29:33.893Z",
+   "currentTs": "2026-09-25T00:06:30.989Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6131,
+     "priceAud2pax": 6113,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -120,11 +120,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1425
+     "outDurationMin": 2340
     },
-    "ts": "2026-09-24T17:53:33.083Z",
-    "depDate": "2027-02-23",
-    "retDate": "2027-03-25"
+    "ts": "2026-09-25T00:06:30.989Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
