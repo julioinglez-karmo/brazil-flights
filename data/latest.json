@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-09-26T13:55:42.641Z",
- "sweepCursor": 4,
+ "updatedAt": "2026-09-26T17:17:51.783Z",
+ "sweepCursor": 8,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 178,
+  "callsUsed": 182,
   "cap": 235
  },
  "pinned": {
@@ -62,7 +62,7 @@
    "currentTs": "2026-09-26T13:55:42.641Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6345,
+     "priceAud2pax": 5868,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,10 +76,10 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2005
+     "outDurationMin": 1340
     },
-    "ts": "2026-09-26T13:55:42.641Z",
-    "depDate": "2027-02-06",
+    "ts": "2026-09-26T17:17:51.783Z",
+    "depDate": "2027-02-05",
     "retDate": "2027-03-14"
    }
   },
