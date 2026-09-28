@@ -1,41 +1,40 @@
 {
- "updatedAt": "2026-09-28T00:04:18.710Z",
+ "updatedAt": "2026-09-28T10:13:55.871Z",
  "sweepCursor": 12,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 190,
+  "callsUsed": 191,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-28T00:04:18.710Z",
+   "ts": "2026-09-28T10:13:55.871Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6105,
-    "validating": "UA",
+    "priceAud2pax": 6344,
+    "validating": "QF",
     "carriers": [
-     "UA",
-     "G3"
+     "QF",
+     "LA"
     ],
     "outRoute": [
      "BNE",
-     "SFO",
-     "ORD",
-     "GRU",
+     "MEL",
+     "SCL",
      "CWB"
     ],
     "backRoute": [],
-    "outStops": 3,
-    "outDurationMin": 2150
+    "outStops": 2,
+    "outDurationMin": 2005
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 0,
-   "vs7dAud": 23
+   "vsYesterdayAud": 239,
+   "vs7dAud": 262
   }
  },
  "routes": {
@@ -57,9 +56,9 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2260
+    "outDurationMin": 2005
    },
-   "currentTs": "2026-09-28T00:04:18.710Z",
+   "currentTs": "2026-09-28T10:13:55.871Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6344,
@@ -76,9 +75,9 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2260
+     "outDurationMin": 2005
     },
-    "ts": "2026-09-28T00:04:18.710Z",
+    "ts": "2026-09-28T10:13:55.871Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -86,24 +85,8 @@
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": {
-    "priceAud2pax": 6161,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "SYD",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2525
-   },
-   "currentTs": "2026-09-28T00:04:18.710Z",
+   "current": null,
+   "currentTs": "2026-09-28T10:13:55.871Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6161,
