@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-09-27T17:50:48.143Z",
+ "updatedAt": "2026-09-28T00:04:18.710Z",
  "sweepCursor": 12,
  "budget": {
   "month": "2026-09",
-  "callsUsed": 189,
+  "callsUsed": 190,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-09-27T14:52:04.075Z",
+   "ts": "2026-09-28T00:04:18.710Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -35,7 +35,7 @@
  "deltas": {
   "CWB": {
    "vsYesterdayAud": 0,
-   "vs7dAud": 79
+   "vs7dAud": 23
   }
  },
  "routes": {
@@ -43,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6345,
+    "priceAud2pax": 6344,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -57,12 +57,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2260
    },
-   "currentTs": "2026-09-27T14:52:04.075Z",
+   "currentTs": "2026-09-28T00:04:18.710Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6414,
+     "priceAud2pax": 6344,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,11 +76,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1340
+     "outDurationMin": 2260
     },
-    "ts": "2026-09-27T17:50:48.143Z",
-    "depDate": "2027-02-07",
-    "retDate": "2027-03-24"
+    "ts": "2026-09-28T00:04:18.710Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
@@ -103,10 +103,10 @@
     "outStops": 2,
     "outDurationMin": 2525
    },
-   "currentTs": "2026-09-27T14:52:04.075Z",
+   "currentTs": "2026-09-28T00:04:18.710Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6414,
+     "priceAud2pax": 6161,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -120,11 +120,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1425
+     "outDurationMin": 2525
     },
-    "ts": "2026-09-27T17:50:48.143Z",
-    "depDate": "2027-02-05",
-    "retDate": "2027-03-22"
+    "ts": "2026-09-28T00:04:18.710Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
