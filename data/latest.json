@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-10-02T10:05:52.086Z",
- "sweepCursor": 28,
+ "updatedAt": "2026-10-02T18:33:36.765Z",
+ "sweepCursor": 0,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 8,
+  "callsUsed": 12,
   "cap": 235
  },
  "pinned": {
@@ -61,7 +61,7 @@
    "currentTs": "2026-10-02T10:05:52.086Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6036,
+     "priceAud2pax": 6362,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -77,9 +77,9 @@
      "outStops": 2,
      "outDurationMin": 2260
     },
-    "ts": "2026-10-02T10:05:52.086Z",
-    "depDate": "2027-02-06",
-    "retDate": "2027-03-14"
+    "ts": "2026-10-02T18:33:36.765Z",
+    "depDate": "2027-02-27",
+    "retDate": "2027-03-29"
    }
   },
   "viaSyd": {
