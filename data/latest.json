@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-10-07T10:37:47.596Z",
- "sweepCursor": 16,
+ "updatedAt": "2026-10-07T19:24:54.741Z",
+ "sweepCursor": 20,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 39,
+  "callsUsed": 43,
   "cap": 235
  },
  "pinned": {
@@ -62,7 +62,7 @@
    "currentTs": "2026-10-07T10:37:47.596Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6298,
+     "priceAud2pax": 6425,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -78,9 +78,9 @@
      "outStops": 2,
      "outDurationMin": 2260
     },
-    "ts": "2026-10-07T10:37:47.596Z",
-    "depDate": "2027-02-06",
-    "retDate": "2027-03-14"
+    "ts": "2026-10-07T19:24:54.741Z",
+    "depDate": "2027-02-13",
+    "retDate": "2027-03-22"
    }
   },
   "viaSyd": {
@@ -90,7 +90,7 @@
    "currentTs": "2026-10-07T10:37:47.596Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6227,
+     "priceAud2pax": 6677,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -104,11 +104,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1400
+     "outDurationMin": 2280
     },
-    "ts": "2026-10-06T18:57:28.956Z",
-    "depDate": "2027-02-09",
-    "retDate": "2027-03-26"
+    "ts": "2026-10-07T19:24:54.741Z",
+    "depDate": "2027-02-11",
+    "retDate": "2027-03-28"
    }
   }
  },
