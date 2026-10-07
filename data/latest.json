@@ -1,40 +1,41 @@
 {
- "updatedAt": "2026-10-07T01:04:49.186Z",
+ "updatedAt": "2026-10-07T10:37:47.596Z",
  "sweepCursor": 16,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 38,
+  "callsUsed": 39,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-10-07T01:04:49.186Z",
+   "ts": "2026-10-07T10:37:47.596Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6038,
-    "validating": "QF",
+    "priceAud2pax": 6119,
+    "validating": "UA",
     "carriers": [
-     "QF",
-     "LA"
+     "UA",
+     "G3"
     ],
     "outRoute": [
      "BNE",
-     "MEL",
-     "SCL",
+     "SFO",
+     "ORD",
+     "GRU",
      "CWB"
     ],
     "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2005
+    "outStops": 3,
+    "outDurationMin": 2150
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 2,
-   "vs7dAud": -68
+   "vsYesterdayAud": 83,
+   "vs7dAud": 13
   }
  },
  "routes": {
@@ -42,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6038,
+    "priceAud2pax": 6298,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -56,12 +57,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2260
    },
-   "currentTs": "2026-10-07T01:04:49.186Z",
+   "currentTs": "2026-10-07T10:37:47.596Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6038,
+     "priceAud2pax": 6298,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,9 +76,9 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2005
+     "outDurationMin": 2260
     },
-    "ts": "2026-10-07T01:04:49.186Z",
+    "ts": "2026-10-07T10:37:47.596Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -86,7 +87,7 @@
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-10-07T01:04:49.186Z",
+   "currentTs": "2026-10-07T10:37:47.596Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6227,
