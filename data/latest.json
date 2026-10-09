@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-10-08T19:19:49.463Z",
+ "updatedAt": "2026-10-09T01:31:15.046Z",
  "sweepCursor": 24,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 49,
+  "callsUsed": 50,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-10-08T10:58:57.089Z",
+   "ts": "2026-10-09T01:31:15.046Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6114,
+    "priceAud2pax": 6117,
     "validating": "UA",
     "carriers": [
      "UA",
@@ -34,8 +34,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 76,
-   "vs7dAud": 9
+   "vsYesterdayAud": 3,
+   "vs7dAud": 81
   }
  },
  "routes": {
@@ -43,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6297,
+    "priceAud2pax": 6349,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -59,10 +59,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-10-08T10:58:57.089Z",
+   "currentTs": "2026-10-09T01:31:15.046Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6821,
+     "priceAud2pax": 6349,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,21 +76,37 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 3445
+     "outDurationMin": 2005
     },
-    "ts": "2026-10-08T19:19:49.463Z",
-    "depDate": "2027-02-17",
-    "retDate": "2027-03-19"
+    "ts": "2026-10-09T01:31:15.046Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": null,
-   "currentTs": "2026-10-08T10:58:57.089Z",
+   "current": {
+    "priceAud2pax": 6312,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "SYD",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2390
+   },
+   "currentTs": "2026-10-09T01:31:15.046Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6354,
+     "priceAud2pax": 6312,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -104,11 +120,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 3450
+     "outDurationMin": 2390
     },
-    "ts": "2026-10-08T19:19:49.463Z",
-    "depDate": "2027-02-17",
-    "retDate": "2027-03-19"
+    "ts": "2026-10-09T01:31:15.046Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
