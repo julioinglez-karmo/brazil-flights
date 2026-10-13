@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-10-12T21:47:15.111Z",
+ "updatedAt": "2026-10-13T02:45:03.406Z",
  "sweepCursor": 8,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 73,
+  "callsUsed": 74,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-10-12T11:23:20.339Z",
+   "ts": "2026-10-13T02:45:03.406Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6119,
+    "priceAud2pax": 6112,
     "validating": "UA",
     "carriers": [
      "UA",
@@ -34,8 +34,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 0,
-   "vs7dAud": 83
+   "vsYesterdayAud": -7,
+   "vs7dAud": 76
   }
  },
  "routes": {
@@ -43,7 +43,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 6349,
+    "priceAud2pax": 6637,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -59,10 +59,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-10-12T11:23:20.339Z",
+   "currentTs": "2026-10-13T02:45:03.406Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6105,
+     "priceAud2pax": 6637,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -76,10 +76,10 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1460
+     "outDurationMin": 2005
     },
-    "ts": "2026-10-12T21:47:15.111Z",
-    "depDate": "2027-02-05",
+    "ts": "2026-10-13T02:45:03.406Z",
+    "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
   },
@@ -87,7 +87,7 @@
    "label": "via Sydney",
    "role": "watch",
    "current": {
-    "priceAud2pax": 6313,
+    "priceAud2pax": 6312,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -101,12 +101,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2390
+    "outDurationMin": 2455
    },
-   "currentTs": "2026-10-12T11:23:20.339Z",
+   "currentTs": "2026-10-13T02:45:03.406Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6384,
+     "priceAud2pax": 6312,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -120,10 +120,10 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 3450
+     "outDurationMin": 2455
     },
-    "ts": "2026-10-12T21:47:15.111Z",
-    "depDate": "2027-02-05",
+    "ts": "2026-10-13T02:45:03.406Z",
+    "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
   }
