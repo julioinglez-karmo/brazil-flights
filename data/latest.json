@@ -1,48 +1,18 @@
 {
- "updatedAt": "2026-10-18T08:22:31.211Z",
+ "updatedAt": "2026-10-18T13:38:29.773Z",
  "sweepCursor": 28,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 109,
+  "callsUsed": 110,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-10-18T08:22:31.211Z",
+   "ts": "2026-10-18T13:38:29.773Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 6313,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "SYD",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2390
-   },
-   "cheapestLatam": null
-  }
- },
- "deltas": {
-  "CWB": {
-   "vsYesterdayAud": 0,
-   "vs7dAud": 194
-  }
- },
- "routes": {
-  "viaMel": {
-   "label": "via Melbourne",
-   "role": "primary",
-   "current": {
-    "priceAud2pax": 6350,
+    "priceAud2pax": 6086,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -58,10 +28,40 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-10-18T08:22:31.211Z",
+   "cheapestLatam": null
+  }
+ },
+ "deltas": {
+  "CWB": {
+   "vsYesterdayAud": -227,
+   "vs7dAud": -33
+  }
+ },
+ "routes": {
+  "viaMel": {
+   "label": "via Melbourne",
+   "role": "primary",
+   "current": {
+    "priceAud2pax": 6086,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "MEL",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2005
+   },
+   "currentTs": "2026-10-18T13:38:29.773Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6350,
+     "priceAud2pax": 6086,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -77,7 +77,7 @@
      "outStops": 2,
      "outDurationMin": 2005
     },
-    "ts": "2026-10-18T08:22:31.211Z",
+    "ts": "2026-10-18T13:38:29.773Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -85,24 +85,8 @@
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": {
-    "priceAud2pax": 6313,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "SYD",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2390
-   },
-   "currentTs": "2026-10-18T08:22:31.211Z",
+   "current": null,
+   "currentTs": "2026-10-18T13:38:29.773Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6313,
