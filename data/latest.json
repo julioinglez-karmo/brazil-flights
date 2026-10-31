@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-10-30T18:41:16.411Z",
+ "updatedAt": "2026-10-31T01:09:15.410Z",
  "sweepCursor": 16,
  "budget": {
   "month": "2026-10",
-  "callsUsed": 195,
+  "callsUsed": 196,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-10-30T10:30:02.108Z",
+   "ts": "2026-10-31T01:09:15.410Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5214,
+    "priceAud2pax": 5783,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -33,8 +33,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 0,
-   "vs7dAud": -821
+   "vsYesterdayAud": 607,
+   "vs7dAud": -301
   }
  },
  "routes": {
@@ -42,7 +42,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 5214,
+    "priceAud2pax": 5783,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -58,10 +58,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-10-30T10:30:02.108Z",
+   "currentTs": "2026-10-31T01:09:15.410Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6705,
+     "priceAud2pax": 5783,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,18 +75,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1340
+     "outDurationMin": 2005
     },
-    "ts": "2026-10-30T18:41:16.411Z",
-    "depDate": "2027-02-09",
-    "retDate": "2027-03-26"
+    "ts": "2026-10-31T01:09:15.410Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-10-30T10:30:02.108Z",
+   "currentTs": "2026-10-31T01:09:15.410Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 6264,
