@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-11-04T20:28:21.429Z",
+ "updatedAt": "2026-11-05T01:52:11.132Z",
  "sweepCursor": 4,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 24,
+  "callsUsed": 25,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-04T11:39:35.369Z",
+   "ts": "2026-11-05T01:52:11.132Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5848,
+    "priceAud2pax": 5824,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -20,21 +20,21 @@
     ],
     "outRoute": [
      "BNE",
-     "MEL",
+     "SYD",
      "SCL",
      "CWB"
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2340
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 65,
-   "vs7dAud": 636
+   "vsYesterdayAud": -24,
+   "vs7dAud": 610
   }
  },
  "routes": {
@@ -42,7 +42,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 5848,
+    "priceAud2pax": 5845,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -58,10 +58,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-11-04T11:39:35.369Z",
+   "currentTs": "2026-11-05T01:52:11.132Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5923,
+     "priceAud2pax": 5845,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,21 +75,37 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2190
+     "outDurationMin": 2005
     },
-    "ts": "2026-11-04T20:28:21.429Z",
-    "depDate": "2027-02-01",
-    "retDate": "2027-03-18"
+    "ts": "2026-11-05T01:52:11.132Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": null,
-   "currentTs": "2026-11-04T11:39:35.369Z",
+   "current": {
+    "priceAud2pax": 5824,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "SYD",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2340
+   },
+   "currentTs": "2026-11-05T01:52:11.132Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 6157,
+     "priceAud2pax": 5824,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -103,11 +119,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2190
+     "outDurationMin": 2340
     },
-    "ts": "2026-11-04T20:28:21.429Z",
-    "depDate": "2027-02-01",
-    "retDate": "2027-03-03"
+    "ts": "2026-11-05T01:52:11.132Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
