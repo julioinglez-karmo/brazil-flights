@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-11-11T20:15:49.007Z",
+ "updatedAt": "2026-11-12T02:34:14.932Z",
  "sweepCursor": 0,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 66,
+  "callsUsed": 67,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-11T11:30:00.347Z",
+   "ts": "2026-11-12T02:34:14.932Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 4918,
+    "priceAud2pax": 4970,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -33,8 +33,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 14,
-   "vs7dAud": -930
+   "vsYesterdayAud": 52,
+   "vs7dAud": -854
   }
  },
  "routes": {
@@ -42,7 +42,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 5396,
+    "priceAud2pax": 5432,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -56,12 +56,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2260
+    "outDurationMin": 2125
    },
-   "currentTs": "2026-11-11T11:30:00.347Z",
+   "currentTs": "2026-11-12T02:34:14.932Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 4988,
+     "priceAud2pax": 5432,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,18 +75,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2260
+     "outDurationMin": 2125
     },
-    "ts": "2026-11-11T20:15:49.007Z",
-    "depDate": "2027-02-27",
-    "retDate": "2027-03-29"
+    "ts": "2026-11-12T02:34:14.932Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
    "current": {
-    "priceAud2pax": 4918,
+    "priceAud2pax": 4970,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -102,10 +102,10 @@
     "outStops": 2,
     "outDurationMin": 2340
    },
-   "currentTs": "2026-11-11T11:30:00.347Z",
+   "currentTs": "2026-11-12T02:34:14.932Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5040,
+     "priceAud2pax": 4970,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -119,11 +119,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2160
+     "outDurationMin": 2340
     },
-    "ts": "2026-11-11T20:15:49.007Z",
-    "depDate": "2027-02-27",
-    "retDate": "2027-03-29"
+    "ts": "2026-11-12T02:34:14.932Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
