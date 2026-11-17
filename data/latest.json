@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-11-17T04:13:32.204Z",
+ "updatedAt": "2026-11-17T18:49:07.835Z",
  "sweepCursor": 20,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 97,
+  "callsUsed": 98,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-17T04:13:32.204Z",
+   "ts": "2026-11-17T18:49:07.835Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5886,
+    "priceAud2pax": 5805,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -20,32 +20,48 @@
     ],
     "outRoute": [
      "BNE",
-     "SYD",
+     "MEL",
      "SCL",
      "CWB"
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2340
+    "outDurationMin": 2005
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 1014,
-   "vs7dAud": 982
+   "vsYesterdayAud": 933,
+   "vs7dAud": 901
   }
  },
  "routes": {
   "viaMel": {
    "label": "via Melbourne",
    "role": "primary",
-   "current": null,
-   "currentTs": "2026-11-17T04:13:32.204Z",
+   "current": {
+    "priceAud2pax": 5805,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "MEL",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2005
+   },
+   "currentTs": "2026-11-17T18:49:07.835Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5870,
+     "priceAud2pax": 5805,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -59,34 +75,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2260
+     "outDurationMin": 2005
     },
-    "ts": "2026-11-16T22:56:57.121Z",
-    "depDate": "2027-02-13",
-    "retDate": "2027-03-22"
+    "ts": "2026-11-17T18:49:07.835Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": {
-    "priceAud2pax": 5886,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "SYD",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2340
-   },
-   "currentTs": "2026-11-17T04:13:32.204Z",
+   "current": null,
+   "currentTs": "2026-11-17T18:49:07.835Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5886,
