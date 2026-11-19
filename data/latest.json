@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-11-19T02:51:44.945Z",
+ "updatedAt": "2026-11-19T12:16:38.412Z",
  "sweepCursor": 28,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 109,
+  "callsUsed": 110,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-19T02:51:44.945Z",
+   "ts": "2026-11-19T12:16:38.412Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -41,24 +41,8 @@
   "viaMel": {
    "label": "via Melbourne",
    "role": "primary",
-   "current": {
-    "priceAud2pax": 7376,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "MEL",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2005
-   },
-   "currentTs": "2026-11-19T02:51:44.945Z",
+   "current": null,
+   "currentTs": "2026-11-19T12:16:38.412Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 7376,
@@ -102,7 +86,7 @@
     "outStops": 2,
     "outDurationMin": 2340
    },
-   "currentTs": "2026-11-19T02:51:44.945Z",
+   "currentTs": "2026-11-19T12:16:38.412Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5887,
@@ -121,7 +105,7 @@
      "outStops": 2,
      "outDurationMin": 2340
     },
-    "ts": "2026-11-19T02:51:44.945Z",
+    "ts": "2026-11-19T12:16:38.412Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
