@@ -1,14 +1,14 @@
 {
- "updatedAt": "2026-11-22T01:43:02.566Z",
+ "updatedAt": "2026-11-22T12:03:46.269Z",
  "sweepCursor": 8,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 127,
+  "callsUsed": 128,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-22T01:43:02.566Z",
+   "ts": "2026-11-22T12:03:46.269Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
@@ -26,7 +26,7 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2260
    },
    "cheapestLatam": null
   }
@@ -56,9 +56,9 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2005
+    "outDurationMin": 2260
    },
-   "currentTs": "2026-11-22T01:43:02.566Z",
+   "currentTs": "2026-11-22T12:03:46.269Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5863,
@@ -75,9 +75,9 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2005
+     "outDurationMin": 2260
     },
-    "ts": "2026-11-22T01:43:02.566Z",
+    "ts": "2026-11-22T12:03:46.269Z",
     "depDate": "2027-02-06",
     "retDate": "2027-03-14"
    }
@@ -85,11 +85,27 @@
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": null,
-   "currentTs": "2026-11-22T01:43:02.566Z",
+   "current": {
+    "priceAud2pax": 5912,
+    "validating": "QF",
+    "carriers": [
+     "QF",
+     "LA"
+    ],
+    "outRoute": [
+     "BNE",
+     "SYD",
+     "SCL",
+     "CWB"
+    ],
+    "backRoute": [],
+    "outStops": 2,
+    "outDurationMin": 2160
+   },
+   "currentTs": "2026-11-22T12:03:46.269Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5952,
+     "priceAud2pax": 5912,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -103,11 +119,11 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1425
+     "outDurationMin": 2160
     },
-    "ts": "2026-11-21T20:10:24.219Z",
-    "depDate": "2027-02-05",
-    "retDate": "2027-03-07"
+    "ts": "2026-11-22T12:03:46.269Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   }
  },
