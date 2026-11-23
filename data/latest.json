@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-11-22T20:24:33.278Z",
+ "updatedAt": "2026-11-23T02:01:56.252Z",
  "sweepCursor": 12,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 132,
+  "callsUsed": 133,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-22T12:03:46.269Z",
+   "ts": "2026-11-23T02:01:56.252Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 5863,
+    "priceAud2pax": 5806,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -26,15 +26,15 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2260
+    "outDurationMin": 2005
    },
    "cheapestLatam": null
   }
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": 8,
-   "vs7dAud": 991
+   "vsYesterdayAud": -57,
+   "vs7dAud": 934
   }
  },
  "routes": {
@@ -42,7 +42,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 5863,
+    "priceAud2pax": 5806,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -56,12 +56,12 @@
     ],
     "backRoute": [],
     "outStops": 2,
-    "outDurationMin": 2260
+    "outDurationMin": 2005
    },
-   "currentTs": "2026-11-22T12:03:46.269Z",
+   "currentTs": "2026-11-23T02:01:56.252Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5922,
+     "priceAud2pax": 5806,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,34 +75,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 1460
+     "outDurationMin": 2005
     },
-    "ts": "2026-11-22T20:24:33.278Z",
-    "depDate": "2027-02-07",
-    "retDate": "2027-03-24"
+    "ts": "2026-11-23T02:01:56.252Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
-   "current": {
-    "priceAud2pax": 5912,
-    "validating": "QF",
-    "carriers": [
-     "QF",
-     "LA"
-    ],
-    "outRoute": [
-     "BNE",
-     "SYD",
-     "SCL",
-     "CWB"
-    ],
-    "backRoute": [],
-    "outStops": 2,
-    "outDurationMin": 2160
-   },
-   "currentTs": "2026-11-22T12:03:46.269Z",
+   "current": null,
+   "currentTs": "2026-11-23T02:01:56.252Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5948,
