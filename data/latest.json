@@ -1,18 +1,18 @@
 {
- "updatedAt": "2026-11-27T22:10:18.603Z",
+ "updatedAt": "2026-11-28T03:36:38.202Z",
  "sweepCursor": 0,
  "budget": {
   "month": "2026-11",
-  "callsUsed": 162,
+  "callsUsed": 163,
   "cap": 235
  },
  "pinned": {
   "CWB": {
-   "ts": "2026-11-27T13:14:46.988Z",
+   "ts": "2026-11-28T03:36:38.202Z",
    "depDate": "2027-02-06",
    "retDate": "2027-03-14",
    "cheapest": {
-    "priceAud2pax": 4774,
+    "priceAud2pax": 5333,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -33,8 +33,8 @@
  },
  "deltas": {
   "CWB": {
-   "vsYesterdayAud": -1079,
-   "vs7dAud": -1031
+   "vsYesterdayAud": 559,
+   "vs7dAud": -522
   }
  },
  "routes": {
@@ -42,7 +42,7 @@
    "label": "via Melbourne",
    "role": "primary",
    "current": {
-    "priceAud2pax": 4774,
+    "priceAud2pax": 5333,
     "validating": "QF",
     "carriers": [
      "QF",
@@ -58,10 +58,10 @@
     "outStops": 2,
     "outDurationMin": 2005
    },
-   "currentTs": "2026-11-27T13:14:46.988Z",
+   "currentTs": "2026-11-28T03:36:38.202Z",
    "lastSeen": {
     "offer": {
-     "priceAud2pax": 5876,
+     "priceAud2pax": 5333,
      "validating": "QF",
      "carriers": [
       "QF",
@@ -75,18 +75,18 @@
      ],
      "backRoute": [],
      "outStops": 2,
-     "outDurationMin": 2260
+     "outDurationMin": 2005
     },
-    "ts": "2026-11-27T22:10:18.603Z",
-    "depDate": "2027-02-27",
-    "retDate": "2027-03-29"
+    "ts": "2026-11-28T03:36:38.202Z",
+    "depDate": "2027-02-06",
+    "retDate": "2027-03-14"
    }
   },
   "viaSyd": {
    "label": "via Sydney",
    "role": "watch",
    "current": null,
-   "currentTs": "2026-11-27T13:14:46.988Z",
+   "currentTs": "2026-11-28T03:36:38.202Z",
    "lastSeen": {
     "offer": {
      "priceAud2pax": 5924,
@@ -113,11 +113,11 @@
  },
  "bestInWindow": {
   "CWB": {
-   "priceAud2pax": 4774,
-   "depDate": "2027-02-06",
-   "retDate": "2027-03-14",
-   "tripDays": 36,
-   "ts": "2026-11-27T13:14:46.988Z"
+   "priceAud2pax": 4787,
+   "depDate": "2027-02-19",
+   "retDate": "2027-03-21",
+   "tripDays": 30,
+   "ts": "2026-11-26T22:28:06.005Z"
   }
  },
  "allTimeLow": {
